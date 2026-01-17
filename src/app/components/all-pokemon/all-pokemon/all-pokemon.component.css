@@ -1,0 +1,28 @@
+.grid {
+  display: flex;
+  flex-wrap: wrap;          
+  justify-content: center;  
+  gap: 1.5rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: clamp(180px, 22vw, 260px);
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.3);  /* translúcido */
+  backdrop-filter: blur(10px);                  /* desenfoque del fondo */
+  -webkit-backdrop-filter: blur(10px);         /* para Safari */
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  overflow: hidden;
+  padding: 0.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+h3 {
+    font-size: 100%;
+    text-transform: uppercase;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+}
