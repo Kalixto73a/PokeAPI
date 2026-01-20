@@ -13,26 +13,27 @@
     width: clamp(130px, 22vw, 160px);
   }
   @media (min-width: 992px) {
-    width: clamp(200px, 15vw, 220px);
+    width: clamp(210px, 15vw, 220px);
   }
   border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.3);  /* translúcido */
-  backdrop-filter: blur(10px);                  /* desenfoque del fondo */
-  -webkit-backdrop-filter: blur(10px);         /* para Safari */
+  background-color: rgba(255, 255, 255, 0.3);  
+  backdrop-filter: blur(10px);                 
+  -webkit-backdrop-filter: blur(10px);         
   box-shadow: 0 4px 12px rgba(0,0,0,.15);
   overflow: hidden;
   padding: 0.5rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.card:hover {
+  transform: scale(1.05);       
+  cursor: pointer;             
+}
+
 h2 {
-    @media (max-width: 991px) {
-      font-size: 15px;
-    }
-    @media (min-width: 992px) {
-      font-size: 30px;
-    }
-    text-transform: uppercase;
+  
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    ransform: uppercase;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     
 }

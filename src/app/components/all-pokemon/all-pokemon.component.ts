@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { AllPokemonAPICallService } from '../../../services/AllPokemonAPICall/all-pokemon-apicall.service';
+import { AllPokemonAPICallService } from '../../services/AllPokemonAPICall/all-pokemon-apicall.service';
+import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component';
 
 
 @Component({
   selector: 'app-all-pokemon',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,],
+  imports: [CommonModule, HttpClientModule, SpriteForEachPokemonComponent],
   providers: [AllPokemonAPICallService],
   templateUrl: './all-pokemon.component.html',
   styleUrl: './all-pokemon.component.css'
@@ -50,5 +51,8 @@ export class AllPokemonComponent implements OnInit {
     this.loadPokemons();
   }
 
-  
+  getPokemonId(pokemon: any): string { 
+  const id = pokemon.url.split('/').filter(Boolean).pop() || '';
+  return id; }
+
 }
