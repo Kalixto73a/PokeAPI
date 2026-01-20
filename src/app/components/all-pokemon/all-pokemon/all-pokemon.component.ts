@@ -24,7 +24,7 @@ export class AllPokemonComponent implements OnInit {
   constructor(private allPokemonService: AllPokemonAPICallService) {}
 
   ngOnInit(): void {
-    this.loadPokemons();  
+    this.loadPokemons();
   }
 
   loadPokemons(): void {
@@ -39,7 +39,7 @@ export class AllPokemonComponent implements OnInit {
       });
   }
 
-  netxPage(): void {
+  nextPage(): void {
     this.offset += this.limit;
     this.loadPokemons();
   }
