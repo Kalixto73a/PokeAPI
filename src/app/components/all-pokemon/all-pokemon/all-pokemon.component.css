@@ -36,3 +36,42 @@ h2 {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+button {
+  background-color: #FFCB05; 
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: transform 0.2s ease;
+  border-radius: 8px;
+  filter: brightness(100%);
+  transition: filter 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:hover {
+    filter: brightness(85%);
+}
+
+button:active {
+    filter: brightness(70%);
+}
+
+
+.imageButton {
+  @media (max-width: 991px) {
+    width: 60px;
+    height: 60px;
+  }
+  @media (min-width: 992px) {
+    width: 100px;
+    height: 100px;
+  }
+}
