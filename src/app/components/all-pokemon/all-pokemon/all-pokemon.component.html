@@ -3,3 +3,11 @@
         <h2>{{ pokemon.name | titlecase }}</h2>
     </div>
 </div>
+<div class="pagination">
+    <button (click)="prevPage()" [disabled] ="offset === 0 || loading">
+        <img class="imageButton" src="https://res.cloudinary.com/dzfqdntdw/image/upload/v1766026502/pngtree-vector-right-arrow-icon-png-image_956430_wvg8sk_a_hflip_woys9e_e_background_removal_f_png_nyuaju.png" alt="Previous Page Button">
+    </button>
+    <button (click)="nextPage()" [disabled] ="loading">
+        <img class="imageButton" src="https://res.cloudinary.com/dzfqdntdw/image/upload/v1766026449/pngtree-vector-right-arrow-icon-png-image_956430_wvg8sk_e_background_removal_f_png_satefl.png" alt="Next Page Button">
+    </button>
+</div>
