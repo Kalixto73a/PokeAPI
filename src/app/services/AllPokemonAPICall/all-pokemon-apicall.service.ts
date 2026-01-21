@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AllPokemon } from '../../model/all-pokemon/all-pokemon';
-import { PokemonQuery } from '../../model/all-pokemon-apicall/all-pokemon.apicall';
+import { PokemonQuery } from '../../model/all-pokemon-apicall/all-pokemon-apicall';
 
 @Injectable({
   providedIn: 'root'
