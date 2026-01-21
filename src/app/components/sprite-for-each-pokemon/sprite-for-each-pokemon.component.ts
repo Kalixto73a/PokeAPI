@@ -3,6 +3,7 @@ import { OnInit } from '@angular/core';
 import { Input } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { SpriteForEachPokemonApicallService } from '../../services/SpriteForEachPokemonAPICall/sprite-for-each-pokemon-apicall.service';
+import { PokemonSprite } from '../../model/sprite-for-each-pokemon-apicall/sprite-for-each-pokemon-apicall';
 
 @Component({
   selector: 'app-sprite-for-each-pokemon',
@@ -14,19 +15,37 @@ import { SpriteForEachPokemonApicallService } from '../../services/SpriteForEach
 })
 export class SpriteForEachPokemonComponent implements OnInit{
 
-  @Input() pokemonId!: string;
-  sprites: any = {}; 
+  @Input() pokemonId : string
+  sprite : string 
 
+  /**
+   * 
+   * Constructor
+   * 
+   * @param {SpriteForEachPokemonAPICall} spriteService 
+   * 
+   */
   constructor(private spriteService: SpriteForEachPokemonApicallService) {}
 
   ngOnInit(): void {
-      this.loadSprites();
+      this.initializeValues()
+  }
+
+  initializeValues(): void {
+
+    this.sprite = ' '
+    this.loadSprites()
+    
+
   }
 
   loadSprites() : void {
     this.spriteService.getSpriteForPokemon(this.pokemonId)
-      .subscribe(pokemon => {
-        this.sprites = pokemon.sprites;
+      .subscribe({
+        next: (detail: PokemonSprite) => {
+          this.sprite = detail.sprites.front_default; 
+        },
+        error: err => console.error('Error cargando sprite:', err)
       });
   }
 }
