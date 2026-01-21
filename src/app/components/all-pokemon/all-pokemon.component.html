@@ -1,11 +1,11 @@
 <div class="grid">
     <div class="card" *ngFor ="let pokemon of pokemons">
-        <app-sprite-for-each-pokemon [pokemonId]="getPokemonId(pokemon)"></app-sprite-for-each-pokemon>
+        <app-sprite-for-each-pokemon [pokemonId]="pokemon.name"></app-sprite-for-each-pokemon>
         <h2>{{ pokemon.name | titlecase }}</h2>
     </div>
 </div>
 <div class="pagination">
-    <button (click)="prevPage()" [disabled] ="offset === 0 || loading">
+    <button (click)="prevPage()" [disabled] ="query.offset === 0 || loading">
         <img class="imageButton" src="https://res.cloudinary.com/dzfqdntdw/image/upload/v1766026502/pngtree-vector-right-arrow-icon-png-image_956430_wvg8sk_a_hflip_woys9e_e_background_removal_f_png_nyuaju.png" alt="Previous Page Button">
     </button>
     <button (click)="nextPage()" [disabled] ="loading">

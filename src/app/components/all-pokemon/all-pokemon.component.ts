@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { AllPokemonAPICallService } from '../../services/AllPokemonAPICall/all-pokemon-apicall.service';
 import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component';
+import { Pokemon } from '../../model/all-pokemon/all-pokemon';
+import { PokemonQuery } from '../../model/all-pokemon-apicall/all-pokemon.apicall';
 
 
 @Component({
@@ -17,42 +19,55 @@ import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite
 
 export class AllPokemonComponent implements OnInit {
 
-  pokemons: any[] = [];
-  limit = 20;
-  offset = 0;
-  loading = false;
+  public loading: boolean
 
-  constructor(private allPokemonService: AllPokemonAPICallService) {}
+  public pokemons:  Pokemon []
+
+  public query : PokemonQuery 
+  
+  /**
+   * Constructor
+   * 
+   * @param {AllPokemonAPICallService} allPokemonService
+   * 
+   */
+  constructor(
+    private allPokemonService: AllPokemonAPICallService
+  ) {}
 
   ngOnInit(): void {
-    this.loadPokemons();
+    this.initializeValues()
+  }
+
+  initializeValues(): void {
+    this.query = { limit : 20, offset : 0 }
+    this.loading = false
+    this.pokemons = []
+
+    this.loadPokemons()
   }
 
   loadPokemons(): void {
-    this.loading = true;
-    this.allPokemonService.getAllPokemon(this.limit, this.offset)
+    this.loading = true
+    this.allPokemonService.getAllPokemon(this.query)
       .subscribe({
         next: response => {
-          this.pokemons = response.results;
-          this.loading = false;
+          this.pokemons = response.results
+          this.loading = false
         },
         error: () => this.loading = false
       });
   }
 
   nextPage(): void {
-    this.offset += this.limit;
-    this.loadPokemons();
+    this.query.offset += this.query.limit
+    this.loadPokemons()
   }
 
   prevPage(): void {
-    if (this.offset === 0) return;
-    this.offset -= this.limit;
-    this.loadPokemons();
+    if (this.query.offset === 0) return
+    this.query.offset -= this.query.limit
+    this.loadPokemons()
   }
-
-  getPokemonId(pokemon: any): string { 
-  const id = pokemon.url.split('/').filter(Boolean).pop() || '';
-  return id; }
 
 }
