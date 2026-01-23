@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { AllPokemonAPICallService } from '../../services/AllPokemonAPICall/all-pokemon-apicall.service';
+import { AllPokemonAPICallService } from '../../services/all-pokemon-apicall/all-pokemon-apicall.service';
 import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component';
 import { Pokemon } from '../../model/all-pokemon/all-pokemon';
 import { PokemonQuery } from '../../model/all-pokemon-apicall/all-pokemon-apicall';
