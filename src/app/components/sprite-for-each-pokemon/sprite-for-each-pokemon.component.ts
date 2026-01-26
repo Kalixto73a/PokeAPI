@@ -3,7 +3,7 @@ import { OnInit } from '@angular/core';
 import { Input } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { SpriteForEachPokemonApicallService } from '../../services/sprite-for-each-pokemon-apicall/sprite-for-each-pokemon-apicall.service';
-import { PokemonSprite } from '../../model/sprite-for-each-pokemon-apicall/sprite-for-each-pokemon-apicall';
+import { PokemonSprite } from '../../model/Sprites/sprite-for-each-pokemon-apicall';
 
 @Component({
   selector: 'app-sprite-for-each-pokemon',
@@ -27,11 +27,11 @@ export class SpriteForEachPokemonComponent implements OnInit{
    */
   constructor(private spriteService: SpriteForEachPokemonApicallService) {}
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
       this.initializeValues()
   }
 
-  initializeValues(): void {
+  private initializeValues(): void {
 
     this.sprite = ' '
     this.loadSprites()
@@ -39,7 +39,7 @@ export class SpriteForEachPokemonComponent implements OnInit{
 
   }
 
-  loadSprites() : void {
+  private loadSprites() : void {
     this.spriteService.getSpriteForPokemon(this.pokemonId)
       .subscribe({
         next: (detail: PokemonSprite) => {
