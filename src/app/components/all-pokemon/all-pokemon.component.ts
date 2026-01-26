@@ -4,8 +4,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { AllPokemonAPICallService } from '../../services/all-pokemon-apicall/all-pokemon-apicall.service';
 import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component';
-import { Pokemon } from '../../model/all-pokemon/all-pokemon';
-import { PokemonQuery } from '../../model/all-pokemon-apicall/all-pokemon-apicall';
+import { Pokemon } from '../../model/Pokemons/all-pokemon';
+import { PokemonQuery } from '../../model/Pokemons/all-pokemon-apicall';
 
 
 @Component({
@@ -35,11 +35,11 @@ export class AllPokemonComponent implements OnInit {
     private allPokemonService: AllPokemonAPICallService
   ) {}
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.initializeValues()
   }
 
-  initializeValues(): void {
+  private initializeValues(): void {
     this.query = { limit : 20, offset : 0 }
     this.loading = false
     this.pokemons = []
@@ -47,7 +47,7 @@ export class AllPokemonComponent implements OnInit {
     this.loadPokemons()
   }
 
-  loadPokemons(): void {
+  private loadPokemons(): void {
     this.loading = true
     this.allPokemonService.getAllPokemon(this.query)
       .subscribe({
@@ -59,12 +59,12 @@ export class AllPokemonComponent implements OnInit {
       });
   }
 
-  nextPage(): void {
+  public nextPage(): void {
     this.query.offset += this.query.limit
     this.loadPokemons()
   }
 
-  prevPage(): void {
+  public prevPage(): void {
     if (this.query.offset === 0) return
     this.query.offset -= this.query.limit
     this.loadPokemons()
