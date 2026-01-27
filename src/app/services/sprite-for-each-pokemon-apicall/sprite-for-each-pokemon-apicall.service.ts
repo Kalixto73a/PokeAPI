@@ -12,7 +12,7 @@ export class SpriteForEachPokemonApicallService {
   
   constructor(private http: HttpClient) { }
 
-  getSpriteForPokemon(id: string | number): Observable<PokemonSprite> {
+  public getSpriteForPokemon(id: string | number): Observable<PokemonSprite> {
     return this.http.get<PokemonSprite>(`${environment.apiUrl}/pokemon/${id}`);
   }
 }
