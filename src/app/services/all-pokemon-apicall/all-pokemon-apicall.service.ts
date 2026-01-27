@@ -13,7 +13,7 @@ export class AllPokemonAPICallService {
 
   constructor(private http: HttpClient) { }
 
-  getAllPokemon(query: PokemonQuery): Observable<AllPokemon> {
+  public getAllPokemon(query: PokemonQuery): Observable<AllPokemon> {
     const { limit, offset } = query
     return this.http.get<AllPokemon>(
       `${environment.apiUrl}/pokemon?limit=${limit}&offset=${offset}`
