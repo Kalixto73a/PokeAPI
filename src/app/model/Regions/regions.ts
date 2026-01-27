@@ -4,14 +4,23 @@ export class Regions{
   private next: boolean
   private previous: boolean
 
-  public  results : RegionDetails[]
+  public  results : NamedAPIResource[]
 
 }
 
 export class RegionDetails {
   
-  public name: string
+  private id: number
 
-  private url: string
+  public name: string
+  public pokedexes: NamedAPIResource[]
+
+
+}
+
+export class NamedAPIResource{
+
+  public name: string
+  public url: string
 
 }
