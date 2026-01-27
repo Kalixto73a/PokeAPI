@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { RegionsAPICallService } from './regions-apicall.service';
 
-describe('RegionsService', () => {
+describe('RegionsAPICallService', () => {
   let service: RegionsAPICallService;
 
   beforeEach(() => {
