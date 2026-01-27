@@ -6,6 +6,7 @@ import { AllPokemonAPICallService } from '../../services/all-pokemon-apicall/all
 import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component';
 import { Pokemon } from '../../model/Pokemons/all-pokemon';
 import { PokemonQuery } from '../../model/Pokemons/all-pokemon-apicall';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -55,7 +56,20 @@ export class AllPokemonComponent implements OnInit {
           this.pokemons = response.results
           this.loading = false
         },
-        error: () => this.loading = false
+        error: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            html: 'There was an error loading the Pokémon list.<br><br>Please reload the page and try again.',
+            theme: 'dark',
+            confirmButtonText: 'Retry',
+            confirmButtonColor: '#FF0000',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.loadPokemons()
+            }
+          })
+        }
       });
   }
 
