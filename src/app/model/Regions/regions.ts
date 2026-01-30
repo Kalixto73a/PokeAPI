@@ -8,18 +8,10 @@ export class Regions{
 
 }
 
-export class RegionDetails {
-  
-  private id: number
-
-  public name: string
-  public pokedexes: NamedAPIResource[]
-
-
-}
 
 export class NamedAPIResource{
 
+  public id: number
   public name: string
   public url: string
 
