@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Pokemon } from '../../model/Pokemons/pokedex';
 import Swal from 'sweetalert2';
 import { RegionDetailsAPICallService } from '../../services/region-details-apicall/region-details-apicall.service';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-pokedex-for-each-region',
@@ -55,54 +56,37 @@ export class PokedexForEachRegionComponent implements OnInit{
   }
 
   private loadPokemonsForEachRegion(): void {
-    this.loading = true;
+  if (this._regionId === null) return;
 
-    this.getRegionDetailsService.getRegionDetails(this._regionId).subscribe({
-      next: (pokedex) => {
-        this.pokedexService.getPokedexRegionByPokedexUrl(pokedex.url).subscribe({
-          next: (pokedexData) => {
-            this.pokemons = pokedexData.pokemon_entries.map(entry => {
-              const url = entry.pokemon_species.url;
-              const id = Number(url.split('/').filter(Boolean).pop());
-              return {
-                name: entry.pokemon_species.name,
-                url,
-                id
-              };
-            });
-            this.loading = false;
-            console.log(this.pokemons);
-          },
-          error: () => {
-            this.loading = false;
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              html: 'There was an error loading Pokémon from this Region.<br><br>Please reload the page and try again.',
-              theme: 'dark',
-              confirmButtonText: 'Reload Page',
-              confirmButtonColor: '#FF0000',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                window.location.reload();
-              }
-            });
-          }
+  this.loading = true;
+
+  this.getRegionDetailsService
+    .getRegionDetails(this._regionId)
+    .pipe(
+      switchMap(pokedex =>
+        this.pokedexService.getPokedexRegionByPokedexUrl(pokedex.url)
+      )
+    )
+    .subscribe({
+      next: pokedexData => {
+        this.pokemons = pokedexData.pokemon_entries.map(entry => {
+          const url = entry.pokemon_species.url;
+          const id = Number(url.split('/').filter(Boolean).pop());
+          return {
+            name: entry.pokemon_species.name,
+            url,
+            id
+          };
         });
+        this.loading = false;
       },
       error: () => {
         this.loading = false;
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          html: 'There was an error loading the region details.<br><br>Please reload the page and try again.',
-          theme: 'dark',
-          confirmButtonText: 'Reload Page',
-          confirmButtonColor: '#FF0000',
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload();
-          }
+          html: 'There was an error loading Pokémon from this Region.',
+          theme: 'dark'
         });
       }
     });
