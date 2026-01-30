@@ -7,6 +7,7 @@ import { Pokemon } from '../../model/Pokemons/pokedex';
 import Swal from 'sweetalert2';
 import { RegionDetailsAPICallService } from '../../services/region-details-apicall/region-details-apicall.service';
 import { switchMap } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router'
 
 @Component({
   selector: 'app-pokedex-for-each-region',
@@ -19,14 +20,7 @@ import { switchMap } from 'rxjs/operators';
 
 export class PokedexForEachRegionComponent implements OnInit{
 
-    private _regionId: number
-
-  @Input() public set regionId(id: number | null ){
-    if (id !== null){
-      this._regionId = id
-      this.loadPokemonsForEachRegion()
-    }
-  }
+  private _regionId: number | null
 
   public loading: boolean
   public pokemons: Pokemon[]
@@ -40,7 +34,8 @@ export class PokedexForEachRegionComponent implements OnInit{
    */
   constructor (
     private pokedexService: PokedexAPICallService,
-    private getRegionDetailsService: RegionDetailsAPICallService
+    private getRegionDetailsService: RegionDetailsAPICallService,
+    private route: ActivatedRoute
   ) {}
 
   public ngOnInit(): void{
@@ -51,8 +46,9 @@ export class PokedexForEachRegionComponent implements OnInit{
 
     this.loading = false
     this.pokemons = []
-    this.regionId = null
-
+    this._regionId = null;
+    this.changeRoute()
+    
   }
 
   private loadPokemonsForEachRegion(): void {
@@ -91,9 +87,19 @@ export class PokedexForEachRegionComponent implements OnInit{
       }
     });
   }
-    
-  public get regionId(): number {
-    return this._regionId
-  }
 
+  private changeRoute(): void{
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
+
+      if ((id)) {
+        this._regionId = id;
+        this.loadPokemonsForEachRegion();
+      }
+
+    });
+  }
+  public formatPokemonId(id: number): string {
+    return id.toString().padStart(3, '0')
+  }
 }
