@@ -1,0 +1,8 @@
+<ul *ngIf="!loading">
+  <li *ngFor="let pokemon of pokemons">
+    <app-sprite-for-each-pokemon [pokemonId]="pokemon.id" class="items-center"></app-sprite-for-each-pokemon>
+    <h2> {{ pokemon.name }} </h2>
+  </li>
+</ul>
+
+
