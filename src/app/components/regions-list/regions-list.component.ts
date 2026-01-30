@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, } from '@angular/common';
 import { RegionsAPICallService } from '../../services/regions-apicall/regions-apicall.service';
 import { NamedAPIResource } from '../../model/Regions/regions';
 import { RegionImages } from '../../core/config/regions-list-images';
 import { HttpClientModule } from '@angular/common/http';
+import { PokedexForEachRegionComponent } from '../../components/pokedex-for-each-region/pokedex-for-each-region.component';
 import Swal from 'sweetalert2';
 
 
@@ -11,7 +12,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-regions-list',
   standalone: true,
-  imports: [ CommonModule, HttpClientModule ],
+  imports: [ CommonModule, HttpClientModule, PokedexForEachRegionComponent ],
   providers:[ RegionsAPICallService ],
   templateUrl: './regions-list.component.html',
   styleUrl: './regions-list.component.css'
@@ -19,10 +20,9 @@ import Swal from 'sweetalert2';
 export class RegionsListComponent  implements OnInit{
 
   public regions: NamedAPIResource[]
-
   public loading: boolean
-
   public regionImages: Record<string, string>
+  public selectedRegionId: number | null
 
   /**
    * Constructor
@@ -43,6 +43,7 @@ export class RegionsListComponent  implements OnInit{
     this.regions= []
     this.regionImages = RegionImages
     this. loading = false
+    this.selectedRegionId = null
 
     this.loadRegionsList()
 
@@ -53,9 +54,16 @@ export class RegionsListComponent  implements OnInit{
       this.regionsListService.getRegions()
         .subscribe({
           next: response => {
-            this.regions = response.results
-            this.loading = false
-          },
+            this.regions = response.results.map(entry => {
+              const url = entry.url
+              const id = Number(url.split('/').filter(Boolean).pop())
+              return {
+                name: entry.name,
+                url,
+                id
+             };
+          })
+        },
           error: () => {
             Swal.fire({
               icon: 'error',
@@ -77,4 +85,8 @@ export class RegionsListComponent  implements OnInit{
       return this.regionImages[regionName.toLowerCase()]
     }
 
+    public selectRegion(id: number): void {
+      console.log('Region ID seleccionada:', id);
+      this.selectedRegionId = id;
+    }
 }
