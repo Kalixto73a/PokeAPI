@@ -4,7 +4,7 @@ import { RegionsAPICallService } from '../../services/regions-apicall/regions-ap
 import { NamedAPIResource } from '../../model/Regions/regions';
 import { RegionImages } from '../../core/config/regions-list-images';
 import { HttpClientModule } from '@angular/common/http';
-import { PokedexForEachRegionComponent } from '../../components/pokedex-for-each-region/pokedex-for-each-region.component';
+import { Router } from '@angular/router'
 import Swal from 'sweetalert2';
 
 
@@ -12,8 +12,8 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-regions-list',
   standalone: true,
-  imports: [ CommonModule, HttpClientModule, PokedexForEachRegionComponent ],
-  providers:[ RegionsAPICallService ],
+  imports: [ CommonModule, HttpClientModule, ],
+  providers:[ RegionsAPICallService, ],
   templateUrl: './regions-list.component.html',
   styleUrl: './regions-list.component.css'
 })
@@ -34,7 +34,8 @@ export class RegionsListComponent  implements OnInit{
    * 
    */
   constructor (
-    private regionsListService: RegionsAPICallService
+    private regionsListService: RegionsAPICallService,
+    private router: Router
   ) {}
 
   public ngOnInit(): void {
@@ -83,7 +84,7 @@ export class RegionsListComponent  implements OnInit{
     
     public selectRegion(region: NamedAPIResource): void {
       const id = Number(region.url.split('/').filter(Boolean).pop());
-      this.selectedRegionId = id;
+      this.router.navigate(['/region', id])
     }
 
 }
