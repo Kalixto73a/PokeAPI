@@ -3,7 +3,7 @@
     *ngFor="let pokemon of pokemons" [ngStyle]="{ 'background': pokemon.cardBackground || '#fff' }">
         <app-sprite-for-each-pokemon [pokemonId]="pokemon.id" class="items-center"></app-sprite-for-each-pokemon>
         <h1 class="uppercase gap-2 text-[0.8rem] lg:text-[1.5rem]">{{ pokemon.name }}</h1>
-        <h2 class="text-[0.8rem] lg:text-[1rem]">{{ '#' + formatPokemonId( pokemon.id ) }}</h2>
+        <app-pokemon-number [pokemonId]="pokemon.id"></app-pokemon-number>
         <app-pokemon-types [pokemonId]="pokemon.id" (typesLoaded)="onTypesLoaded($event)" class="flex justify-center items-center"></app-pokemon-types>
     </div>
 </div>
