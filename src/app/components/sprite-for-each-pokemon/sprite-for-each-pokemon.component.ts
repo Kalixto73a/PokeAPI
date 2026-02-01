@@ -17,7 +17,8 @@ import  Swal  from 'sweetalert2';
 export class SpriteForEachPokemonComponent implements OnInit{
 
   @Input() pokemonId : number
-  sprite : string[]
+  
+  public sprite : string[]
 
   /**
    * 
