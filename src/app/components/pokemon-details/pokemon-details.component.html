@@ -1,0 +1,6 @@
+<div *ngIf="pokemon" class="flex text-white">
+  <app-pokemon-number [pokemonId]="pokemonId"></app-pokemon-number>
+  <div> {{pokemon.name}} </div>
+  <app-sprite-for-each-pokemon [pokemonId]="pokemonId"></app-sprite-for-each-pokemon>
+  <app-pokemon-types [pokemonId]="pokemonId"></app-pokemon-types>
+</div>
