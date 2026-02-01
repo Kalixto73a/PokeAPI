@@ -7,10 +7,10 @@ import { Pokemon } from '../../model/Pokemons/pokedex';
 import { PokemonTypesComponent } from '../pokemon-types/pokemon-types.component';
 import { RegionDetailsAPICallService } from '../../services/region-details-apicall/region-details-apicall.service';
 import { switchMap } from 'rxjs/operators';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router  } from '@angular/router';
 import { PokemonTypesColors } from '../../core/config/types-colors';
 import { PokemonTypes } from '../../model/Pokemons/pokemon-details';
-import { PokemonNumberComponent } from '../pokemon-number/pokemon-number.component'
+import { PokemonNumberComponent } from '../pokemon-number/pokemon-number.component';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -41,6 +41,7 @@ export class PokedexForEachRegionComponent implements OnInit{
   constructor (
     private pokedexService: PokedexAPICallService,
     private getRegionDetailsService: RegionDetailsAPICallService,
+    private router: Router,
     private route: ActivatedRoute
   ) {}
 
@@ -135,5 +136,8 @@ export class PokedexForEachRegionComponent implements OnInit{
     return `linear-gradient(135deg, ${colors.join(', ')})`;
   }
 
+  public goToPokemonDetails(id: number): void {
+    this.router.navigate([`/pokemon/${id}`]);
+  }
 
 }
