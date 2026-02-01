@@ -3,7 +3,7 @@ import { OnInit } from '@angular/core';
 import { Input } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { SpriteForEachPokemonApicallService } from '../../services/sprite-for-each-pokemon-apicall/sprite-for-each-pokemon-apicall.service';
-import { PokemonSprite } from '../../model/Pokemons/pokemon-details';
+import { PokemonDetails } from '../../model/Pokemons/pokemon-details';
 import  Swal  from 'sweetalert2';
 
 @Component({
@@ -17,7 +17,7 @@ import  Swal  from 'sweetalert2';
 export class SpriteForEachPokemonComponent implements OnInit{
 
   @Input() pokemonId : number
-  sprite : string 
+  sprite : string[]
 
   /**
    * 
@@ -34,7 +34,7 @@ export class SpriteForEachPokemonComponent implements OnInit{
 
   private initializeValues(): void {
 
-    this.sprite = ' '
+    this.sprite = []
     this.loadSprites()
     
 
@@ -43,8 +43,17 @@ export class SpriteForEachPokemonComponent implements OnInit{
   private loadSprites() : void {
     this.spriteService.getSpriteForPokemon(this.pokemonId)
       .subscribe({
-        next: (detail: PokemonSprite) => {
-          this.sprite = detail.sprites.front_default; 
+        next: (response: PokemonDetails) => {
+          this.sprite = [ 
+            response.sprites.front_default,
+            response.sprites.front_female,
+            response.sprites.front_shiny,
+            response.sprites.front_shiny_female,
+            response.sprites.back_default,
+            response.sprites.back_female,
+            response.sprites.back_shiny,
+            response.sprites.back_female_shiny,
+          ]
         },
         error:() => Swal.fire({
           icon: 'error',
