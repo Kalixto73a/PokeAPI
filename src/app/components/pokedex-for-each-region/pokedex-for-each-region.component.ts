@@ -10,12 +10,13 @@ import { switchMap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { PokemonTypesColors } from '../../core/config/types-colors';
 import { PokemonTypes } from '../../model/Pokemons/pokemon-details';
+import { PokemonNumberComponent } from '../pokemon-number/pokemon-number.component'
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pokedex-for-each-region',
   standalone: true,
-  imports: [ CommonModule, SpriteForEachPokemonComponent, HttpClientModule, PokemonTypesComponent],
+  imports: [ CommonModule, SpriteForEachPokemonComponent, HttpClientModule, PokemonTypesComponent, PokemonNumberComponent],
   providers: [ PokedexAPICallService, RegionDetailsAPICallService ],
   templateUrl: './pokedex-for-each-region.component.html',
   styleUrl: './pokedex-for-each-region.component.css'
