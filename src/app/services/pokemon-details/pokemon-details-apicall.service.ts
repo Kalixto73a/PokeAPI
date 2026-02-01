@@ -8,11 +8,11 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 
-export class SpriteForEachPokemonApicallService {
+export class DetailsForEachPokemonApicallService {
   
   constructor(private http: HttpClient) { }
 
-  public getSpriteForPokemon(id: string | number): Observable<PokemonDetails> {
+  public getDetailsOfPokemon(id: string | number): Observable<PokemonDetails> {
     return this.http.get<PokemonDetails>(`${environment.apiUrl}/pokemon/${id}`);
   }
 }
