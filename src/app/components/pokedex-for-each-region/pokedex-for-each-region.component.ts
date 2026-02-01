@@ -4,15 +4,18 @@ import { PokedexAPICallService } from '../../services/pokedex-apicall/pokedex-ap
 import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component';
 import { HttpClientModule } from '@angular/common/http';
 import { Pokemon } from '../../model/Pokemons/pokedex';
-import Swal from 'sweetalert2';
+import { PokemonTypesComponent } from '../pokemon-types/pokemon-types.component';
 import { RegionDetailsAPICallService } from '../../services/region-details-apicall/region-details-apicall.service';
 import { switchMap } from 'rxjs/operators';
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute } from '@angular/router';
+import { PokemonTypesColors } from '../../core/config/types-colors';
+import { PokemonTypes } from '../../model/Pokemons/pokemon-details';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pokedex-for-each-region',
   standalone: true,
-  imports: [ CommonModule, SpriteForEachPokemonComponent, HttpClientModule],
+  imports: [ CommonModule, SpriteForEachPokemonComponent, HttpClientModule, PokemonTypesComponent],
   providers: [ PokedexAPICallService, RegionDetailsAPICallService ],
   templateUrl: './pokedex-for-each-region.component.html',
   styleUrl: './pokedex-for-each-region.component.css'
@@ -24,6 +27,8 @@ export class PokedexForEachRegionComponent implements OnInit{
 
   public loading: boolean
   public pokemons: Pokemon[]
+  public pokemonTypes: PokemonTypes[]
+  cardBackground: string ;
 
   /**
    * Constructor
@@ -47,6 +52,8 @@ export class PokedexForEachRegionComponent implements OnInit{
     this.loading = false
     this.pokemons = []
     this._regionId = null;
+    this.pokemonTypes = []
+    this.cardBackground = '#fff'
     this.changeRoute()
     
   }
@@ -102,4 +109,30 @@ export class PokedexForEachRegionComponent implements OnInit{
   public formatPokemonId(id: number): string {
     return id.toString().padStart(3, '0')
   }
+
+  public onTypesLoaded(event: { pokemonId: number, types: PokemonTypes[] }) {
+    const { pokemonId, types } = event;
+
+    // calculamos el background
+    const background = this.calculateCardBackground(types);
+
+    // asignamos el background solo al Pokémon correspondiente
+    const pokemon = this.pokemons.find(p => p.id === pokemonId);
+    if (pokemon) {
+      pokemon.cardBackground = background;
+    }
+  }
+  
+  public calculateCardBackground(types: PokemonTypes[]): string {
+    if (!types || types.length === 0) return '#fff';
+
+    const colors = types.map(t => PokemonTypesColors[t.type.name] ?? '#777');
+
+    if (colors.length === 1) return colors[0];
+
+    // gradiente diagonal simple para 2 colores
+    return `linear-gradient(135deg, ${colors.join(', ')})`;
+  }
+
+
 }
