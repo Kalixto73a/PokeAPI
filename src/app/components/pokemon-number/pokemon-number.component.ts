@@ -9,7 +9,7 @@ import { Component, Input } from '@angular/core';
 })
 export class PokemonNumberComponent {
 
-  @Input() pokemonId : number
+  @Input() public pokemonId : number
 
   public formatPokemonId(id: number): string {
     return id.toString().padStart(3, '0')
