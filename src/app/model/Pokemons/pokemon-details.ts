@@ -3,7 +3,7 @@ export class PokemonDetails{
     public id : string
     public name : string
     public sprites  :  DiferentSprites
-    public types: Types[]
+    public types: PokemonTypes[]
     
 }
 
@@ -20,8 +20,9 @@ export class DiferentSprites{
 
 }
 
-export class Types{
+export class PokemonTypes{
 
+    public slot: number
     public type: NamedAPIResource
 
 }
