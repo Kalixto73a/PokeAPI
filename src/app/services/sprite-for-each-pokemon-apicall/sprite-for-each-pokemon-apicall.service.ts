@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs'; 
-import { PokemonSprite } from '../../model/Pokemons/pokemon-details';
+import { PokemonDetails } from '../../model/Pokemons/pokemon-details';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -12,7 +12,7 @@ export class SpriteForEachPokemonApicallService {
   
   constructor(private http: HttpClient) { }
 
-  public getSpriteForPokemon(id: string | number): Observable<PokemonSprite> {
-    return this.http.get<PokemonSprite>(`${environment.apiUrl}/pokemon/${id}`);
+  public getSpriteForPokemon(id: string | number): Observable<PokemonDetails> {
+    return this.http.get<PokemonDetails>(`${environment.apiUrl}/pokemon/${id}`);
   }
 }
