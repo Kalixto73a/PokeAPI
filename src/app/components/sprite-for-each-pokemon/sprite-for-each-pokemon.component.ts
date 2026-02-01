@@ -3,7 +3,7 @@ import { OnInit } from '@angular/core';
 import { Input } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { SpriteForEachPokemonApicallService } from '../../services/sprite-for-each-pokemon-apicall/sprite-for-each-pokemon-apicall.service';
-import { PokemonSprite } from '../../model/Sprites/sprite-for-each-pokemon-apicall';
+import { PokemonSprite } from '../../model/Pokemons/pokemon-details';
 import  Swal  from 'sweetalert2';
 
 @Component({
