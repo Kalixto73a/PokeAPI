@@ -13,6 +13,6 @@ export class DetailsForEachPokemonApicallService {
   constructor(private http: HttpClient) { }
 
   public getDetailsOfPokemon(id: string | number): Observable<PokemonDetails> {
-    return this.http.get<PokemonDetails>(`${environment.apiUrl}/pokemon/${id}`);
+    return this.http.get<PokemonDetails>(`${environment.apiUrl}pokemon/${id}`);
   }
 }
