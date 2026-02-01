@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Input } from '@angular/core'
 import { CommonModule } from '@angular/common';
-import { SpriteForEachPokemonApicallService } from '../../services/sprite-for-each-pokemon-apicall/sprite-for-each-pokemon-apicall.service';
+import { DetailsForEachPokemonApicallService } from '../../services/pokemon-details/pokemon-details-apicall.service';
 import { PokemonDetails } from '../../model/Pokemons/pokemon-details';
 import  Swal  from 'sweetalert2';
 
@@ -10,7 +10,7 @@ import  Swal  from 'sweetalert2';
   selector: 'app-sprite-for-each-pokemon',
   standalone: true,
   imports: [CommonModule, ],
-  providers: [SpriteForEachPokemonApicallService],
+  providers: [DetailsForEachPokemonApicallService],
   templateUrl: './sprite-for-each-pokemon.component.html',
   styleUrl: './sprite-for-each-pokemon.component.css'
 })
@@ -23,10 +23,10 @@ export class SpriteForEachPokemonComponent implements OnInit{
    * 
    * Constructor
    * 
-   * @param {SpriteForEachPokemonAPICall} spriteService 
+   * @param {DetailsForEachPokemonApicallService} spriteService 
    * 
    */
-  constructor(private spriteService: SpriteForEachPokemonApicallService) {}
+  constructor(private spriteService: DetailsForEachPokemonApicallService) {}
 
   public ngOnInit(): void {
       this.initializeValues()
@@ -41,7 +41,7 @@ export class SpriteForEachPokemonComponent implements OnInit{
   }
 
   private loadSprites() : void {
-    this.spriteService.getSpriteForPokemon(this.pokemonId)
+    this.spriteService.getDetailsOfPokemon(this.pokemonId)
       .subscribe({
         next: (response: PokemonDetails) => {
           this.sprite = [ 
