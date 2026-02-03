@@ -2,7 +2,7 @@ import { HttpClient} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
-import { PokemonSpicies } from '../../model/Pokemons/pokemon-species';
+import { EvolutionChain } from '../../model/Pokemons/pokemon-evolution-chain';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +11,8 @@ export class EvolutionChainApicallService {
 
   constructor( private http: HttpClient) { }
 
-  public getPokemonSpeciesData(url: string): Observable<PokemonSpicies> {
-      return this.http.get<PokemonSpicies>(`${url}`)
+  public getPokemonEvolutionChain(url: string): Observable<EvolutionChain> {
+      return this.http.get<EvolutionChain>(`${url}`)
     }
 
 }
