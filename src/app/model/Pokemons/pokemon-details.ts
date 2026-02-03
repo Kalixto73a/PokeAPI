@@ -6,6 +6,8 @@ export class PokemonDetails{
     public types: PokemonTypes[]
     public weight: number
     public stats: Stats[]
+    public species: NamedAPIResource
+    
 }
 
 export class DiferentSprites{
