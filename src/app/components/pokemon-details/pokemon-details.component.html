@@ -3,4 +3,13 @@
   <div> {{pokemon.name}} </div>
   <app-sprite-for-each-pokemon [pokemonId]="pokemonId"></app-sprite-for-each-pokemon>
   <app-pokemon-types [pokemonId]="pokemonId"></app-pokemon-types>
+  <div> {{ pokemon.weight }}</div>
+  <div *ngFor = 'let s of pokemon.stats'>
+      <div class="uppercase">
+        {{ s.stat.name }} 
+      </div>
+      <div>
+        {{ s.base_stat }} 
+      </div>
+  </div>
 </div>
