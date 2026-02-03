@@ -7,12 +7,13 @@ import { DetailsForEachPokemonApicallService } from '../../services/pokemon-deta
 import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component';
 import { Pokemon } from '../../model/Pokemons/pokedex';
 import { ActivatedRoute } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pokemon-details',
   standalone: true,
-  imports: [ PokemonNumberComponent, PokemonTypesComponent, SpriteForEachPokemonComponent, CommonModule ],
+  imports: [ PokemonNumberComponent, PokemonTypesComponent, SpriteForEachPokemonComponent, CommonModule, HttpClientModule ],
   providers: [ DetailsForEachPokemonApicallService ],
   templateUrl: './pokemon-details.component.html',
   styleUrl: './pokemon-details.component.css'
@@ -82,6 +83,7 @@ export class PokemonDetailsComponent implements OnInit{
     if (this.pokemonId) {
       this.detailsForEachPokemonService.getDetailsOfPokemon(this.pokemonId)
         .subscribe(details => {
+          console.log('Detalles del Pokémon:', details)
           this.pokemon = details
           this.loading = false
         }, error => {
@@ -97,7 +99,7 @@ export class PokemonDetailsComponent implements OnInit{
               window.location.reload();
             }
           })
-        })
+      })
     }
   }
 
