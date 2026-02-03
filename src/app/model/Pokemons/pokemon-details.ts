@@ -4,7 +4,8 @@ export class PokemonDetails{
     public name : string
     public sprites  :  DiferentSprites
     public types: PokemonTypes[]
-    
+    public weight: number
+    public stats: Stats[]
 }
 
 export class DiferentSprites{
@@ -33,4 +34,11 @@ export class NamedAPIResource{
 
     public name: string
     
+}
+
+export class Stats{
+    
+    public base_stat: number
+    public stat: NamedAPIResource
+
 }
