@@ -22,6 +22,7 @@ export class EvolutionDetails {
   public location?: NamedAPIResource | null
   public min_affection?: number | null
   public min_beauty?: number | null
+  public min_damage_taken?: number | null
   public min_happiness?: number | null
   public min_level?: number | null
   public min_move_count?: number | null
@@ -30,6 +31,7 @@ export class EvolutionDetails {
   public needs_multiplayer?: boolean | null
   public party_species?: NamedAPIResource | null
   public party_type?: NamedAPIResource | null
+  public relative_physical_stats?: number | null
   public time_of_day?: string | null
   public trade_species?: NamedAPIResource | null
   public turn_upside_down?: boolean | null
