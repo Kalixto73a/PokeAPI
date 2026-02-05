@@ -1,0 +1,26 @@
+<div *ngIf="!loading && evolutionChain" class="py-4">
+  <h3 class="text-lg font-semibold mb-4 text-center">Evolution Chain</h3>
+
+  <div class="flex flex-wrap justify-center items-start gap-4">
+    <div *ngFor="let pokemon of getEvolutionChainOfPokemon(evolutionChain.chain); let i = index"
+         class="flex flex-col items-center p-2 rounded-xl font-bold 
+                w-36 sm:w-40 md:w-48 lg:w-[400px] xl:w-[400px]
+                h-[350px] bg-white/30 border-2 border-black"
+         [ngStyle]="{ 'background': pokemonTypesMap[(getPokemonIdFromSpeciesUrl(pokemon.species.url))] ? 
+         getCardBackgroundForPokemon(pokemonTypesMap[(getPokemonIdFromSpeciesUrl(pokemon.species.url))]) : '#fff' }">
+
+      <!-- Sprite y nombre -->
+        <app-sprite-for-each-pokemon 
+            [pokemonId]="getPokemonIdFromSpeciesUrl(pokemon.species.url)"
+            class="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-64 lg:h-64 rounded-full overflow-hidden flex items-center justify-center">
+        </app-sprite-for-each-pokemon>
+      
+      <span class="mt-2 font-medium text-center uppercase mb-2">{{ pokemon.species.name }}</span>
+
+      <img src="https://res.cloudinary.com/dzfqdntdw/image/upload/v1770229765/imgbin_9dfad48a770f2f4bc9fde3a1a5c6fb7c_s7cmyu.png" *ngIf="pokemon.evolution_details.length"
+        class="w-8 h-8 mt-2 cursor-pointer mb-4"
+        (click)="openEvolutionPopup(pokemon.evolution_details)" draggable="false" alt="">
+
+    </div>
+  </div>
+</div>
