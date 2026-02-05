@@ -1,0 +1,46 @@
+name: Deploy Angular App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Angular app
+        run: npm run build --prod
+
+      - name: Push to dev branch
+        run: |
+          git config user.name "Kalixto73a"
+          git config user.email "111712690+Kalixto73a@users.noreply.github.com"
+          git add .
+          git commit -m "Deploy Angular app to dev"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Kalixto73a/PokeAPI.git dev
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages 
+          folder: dist/poke-api  
+
+      - name: Deployed to GitHub Pages
+        run: echo "Deployment to GitHub Pages successful!"
