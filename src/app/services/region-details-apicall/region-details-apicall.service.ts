@@ -12,8 +12,9 @@ export class RegionDetailsAPICallService {
 
   constructor( private http: HttpClient) { }
 
-   public getRegionDetails(id: number): Observable<Pokedexes> {
-      return this.http.get<RegionDetails>(`${environment.apiUrl}/region/${id}`).pipe(map(response => response.pokedexes[0]))
+   public getRegionDetails(id: number, indices: number[] ): Observable<Pokedexes[]> {
+      return this.http.get<RegionDetails>(`${environment.apiUrl}/region/${id}`)
+      .pipe(map(response => indices.map( i => response.pokedexes[i]).filter(Boolean)))
     }
 
 }
