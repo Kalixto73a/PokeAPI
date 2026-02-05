@@ -1,6 +1,6 @@
 export class Pokedex {
     
-    private id: number
+    public id: number
     private name: string
     public pokemon_entries: PokemonsOfThatRegion[]
 
