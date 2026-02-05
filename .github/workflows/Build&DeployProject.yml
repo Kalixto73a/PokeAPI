@@ -3,7 +3,7 @@ name: Deploy Angular App to GitHub Pages
 on:
   push:
     branches:
-      - dev
+      - dev 
 
 jobs:
   build:
@@ -28,19 +28,11 @@ jobs:
       - name: Build Angular app
         run: npm run build --prod
 
-      - name: Push to dev branch
-        run: |
-          git config user.name "Kalixto73a"
-          git config user.email "111712690+Kalixto73a@users.noreply.github.com"
-          git add .
-          git commit -m "Deploy Angular app to dev"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Kalixto73a/PokeAPI.git dev
-
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages 
-          folder: dist/poke-api  
+          folder: dist/poke-api 
 
       - name: Deployed to GitHub Pages
         run: echo "Deployment to GitHub Pages successful!"
