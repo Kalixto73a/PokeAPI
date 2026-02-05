@@ -32,8 +32,7 @@ export class PokemonTypes{
 
 export class NamedAPIResource{
 
-    private url: string
-
+    public url: string
     public name: string
     
 }
