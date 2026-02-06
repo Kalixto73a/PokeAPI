@@ -28,7 +28,10 @@
               "src/styles.css"
             ],
             "scripts": [],
-            "baseHref": "/PokeAPI/"
+            "baseHref": "/PokeAPI/",
+            "allowedCommonJsDependencies": [
+                "sweetalert2"
+            ]
           },
           "configurations": {
             "production": {
