@@ -6,7 +6,6 @@ import { RegionImages } from '../../core/config/regions-list-images';
 import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router'
 import Swal from 'sweetalert2';
-import { RegionStateService } from '../../services/region-state-service/region-state.service';
 
 
 
@@ -32,12 +31,10 @@ export class RegionsListComponent  implements OnInit{
    * Constructor
    * 
    * @param {RegionsAPICallService} regionsListService
-   * @param {RegionStateService} regionState
    * 
    */
   constructor (
     private regionsListService: RegionsAPICallService,
-    private regionState: RegionStateService,
     private router: Router
   ) {}
 
@@ -78,19 +75,19 @@ export class RegionsListComponent  implements OnInit{
               }
             })
           }
-        })
+        });
     }
 
-    public getRegionImage(regionId: NamedAPIResource): string{
-      const id = Number(regionId.url.split('/').filter(Boolean).pop())
-      return this.regionImages[id]
+    public getRegionId(region: NamedAPIResource): number {
+      return Number(region.url.split('/').filter(Boolean).pop());
+    }
+
+    public getRegionImage(regionId: number): string{
+      return this.regionImages[regionId]
     }
     
-    public selectRegion(region: NamedAPIResource) {
-      const id = Number(region.url.split('/').filter(Boolean).pop())
-      this.regionState.setRegion(id)
-      this.router.navigate(['/region', id])
+    public selectRegion(region: NamedAPIResource): void {
+      this.router.navigate(['/region', this.getRegionId(region)]);
     }
-    
 
 }
