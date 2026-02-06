@@ -1,0 +1,38 @@
+name: Deploy Angular App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - dev 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Angular app
+        run: npm run build --prod
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages 
+          folder: dist/poke-api/browser
+
+      - name: Deployed to GitHub Pages
+        run: echo "Deployment to GitHub Pages successful!"
