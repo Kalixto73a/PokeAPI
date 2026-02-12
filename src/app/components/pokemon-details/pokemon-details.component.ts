@@ -12,12 +12,14 @@ import { PokemonEvolutionChainComponent } from '../pokemon-evolution-chain/pokem
 import Swal from 'sweetalert2';
 import { RegionStateService } from '../../services/region-state-service/region-state.service';
 import { PokemonTypesColors } from '../../core/config/types-colors';
+import { RegionDetailsAPICallService } from '../../services/region-details-apicall/region-details-apicall.service';
+import { RegionImages } from '../../core/config/regions-list-images';
 
 @Component({
   selector: 'app-pokemon-details',
   standalone: true,
-  imports: [ PokemonNumberComponent, PokemonTypesComponent, SpriteForEachPokemonComponent, CommonModule, HttpClientModule, PokemonEvolutionChainComponent ],
-  providers: [ DetailsForEachPokemonApicallService ],
+  imports: [ HttpClientModule, PokemonNumberComponent, PokemonTypesComponent, SpriteForEachPokemonComponent, CommonModule, PokemonEvolutionChainComponent ],
+  providers: [ DetailsForEachPokemonApicallService, RegionDetailsAPICallService ],
   templateUrl: './pokemon-details.component.html',
   styleUrl: './pokemon-details.component.css'
 })
@@ -28,7 +30,8 @@ export class PokemonDetailsComponent implements OnInit{
 
   public loading: boolean
   public pokemon: PokemonDetails
-  public regionImage: string | null
+  public regionId: number | null 
+  public regionImage: Record<number, string>
   public regionName: string | null
   public statsBackground: string
   public statsWidths: number[]
@@ -39,6 +42,7 @@ export class PokemonDetailsComponent implements OnInit{
    * 
    * @param {DetailsForEachPokemonApicallService} detailsForEachPokemonService
    * @param {RegionStateService} regionState
+   * @param {RegionDetailsAPICallService} regionDetailsService
    * 
    */
 
@@ -46,6 +50,7 @@ export class PokemonDetailsComponent implements OnInit{
 
     private detailsForEachPokemonService: DetailsForEachPokemonApicallService,
     private regionState: RegionStateService,
+    private regionDetailsService: RegionDetailsAPICallService,
     private route: ActivatedRoute,
 
   ) {}
@@ -53,18 +58,19 @@ export class PokemonDetailsComponent implements OnInit{
   public ngOnInit(): void{
 
     this.initializeValues()
-
+  
   }
 
   private initializeValues(): void{
 
     this.loading = false
     this.pokemon = {} as PokemonDetails
-    this.regionImage = this.regionState.getRegionImage()
-    this.regionName = this.regionState.getRegionName()
+    this.regionId = null
+    this.regionImage = RegionImages
     this.statsBackground = ''
     this.statsWidths = []
     this.getIdByUrl()
+    this.getRegionDetails();
     this.loadPokemonDetails()
     
   } 
@@ -72,9 +78,11 @@ export class PokemonDetailsComponent implements OnInit{
   private getIdByUrl(): void {
     this.loading = true
     this.route.paramMap.subscribe(params => {
-      const id = params.get('id')
-      if (id) {
-        this.pokemonId = +id
+      this.regionId = Number(params.get('id'))
+      this.pokemonId = Number(params.get('pokemonId'))
+      if (this.regionId && this.pokemonId) {
+        console.log('Region ID:', this.regionId);
+        console.log('Pokemon ID:', this.pokemonId);
         this.loading= false
       } else {
         Swal.fire({
@@ -93,6 +101,34 @@ export class PokemonDetailsComponent implements OnInit{
     })
   }
   
+  private getRegionDetails(): void {
+    this.loading = true
+    if (this.regionId !== null){
+      this.regionDetailsService.getRegionDetails(this.regionId)
+      .subscribe({
+        next: (response) =>{
+          console.log('Region Details:', response)
+          this.regionName = response.name
+          this.regionId = response.id
+          this.loading = false;
+        },
+        error: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            html: 'An Error Ocurred<br><br>Please reload the page and try again.',
+            theme: 'dark',
+            confirmButtonText: 'Retry',
+            confirmButtonColor: '#FF0000',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.reload();
+            }
+          })
+        }
+      })
+    }
+  }
   private loadPokemonDetails(): void{
     this.loading = true
     if (this.pokemonId) {
@@ -151,6 +187,10 @@ export class PokemonDetailsComponent implements OnInit{
 
   public goBack(): void {
     window.history.back();
+  }
+
+  public getRegionImage(regionId: number): string{
+      return this.regionImage[regionId]
   }
   
 }

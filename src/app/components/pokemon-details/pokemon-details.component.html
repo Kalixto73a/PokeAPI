@@ -114,8 +114,8 @@
     >
       <h3 class="uppercase font-bold text-lg lg:text-xl">{{ regionName }}</h3>
       <img
-        *ngIf="regionImage"
-        [src]="regionImage"
+        *ngIf="regionId"
+        [src]="getRegionImage(regionId)"
         alt="Region image"
         class="w-32 lg:w-full h-auto rounded-xl border-4 border-black"
         draggable="false"
