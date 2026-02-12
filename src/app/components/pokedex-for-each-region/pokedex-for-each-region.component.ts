@@ -16,7 +16,8 @@ import { forkJoin } from 'rxjs';
 
  @Component({ 
     selector: 'app-pokedex-for-each-region', 
-    standalone: true, imports: [ CommonModule, SpriteForEachPokemonComponent, HttpClientModule, PokemonTypesComponent, PokemonNumberComponent], 
+    standalone: true, 
+    imports: [ CommonModule, SpriteForEachPokemonComponent, HttpClientModule, PokemonTypesComponent, PokemonNumberComponent], 
     providers: [ PokedexAPICallService, RegionDetailsAPICallService ], 
     templateUrl: './pokedex-for-each-region.component.html', 
     styleUrl: './pokedex-for-each-region.component.css' 
@@ -42,7 +43,8 @@ export class PokedexForEachRegionComponent implements OnInit{
     constructor ( 
         private pokedexService: PokedexAPICallService,
         private getRegionDetailsService: RegionDetailsAPICallService, 
-        private router: Router, private route: ActivatedRoute 
+        private router: Router, 
+        private route: ActivatedRoute 
     ) {} 
     
     public ngOnInit(): void{
@@ -66,7 +68,7 @@ export class PokedexForEachRegionComponent implements OnInit{
         if (this._regionId === null) return
         this.loading = true
         const indices = RegionPokedexIndex[this._regionId]
-        this.getRegionDetailsService .getRegionDetails(this._regionId, indices)
+        this.getRegionDetailsService.getRegionPokedex(this._regionId, indices)
         .pipe(switchMap(pokedexes => { 
             const calls = pokedexes.map(p => this.pokedexService.getPokedexRegionByPokedexUrl(p.url))
             return forkJoin(calls) 
@@ -122,7 +124,9 @@ export class PokedexForEachRegionComponent implements OnInit{
     } 
 
     public goToPokemonDetails(id: number): void { 
-        this.router.navigate([`/pokemon/${id}`])
+        if (this._regionId !== null) {
+        this.router.navigate([`region/${this._regionId}/pokemon/${id}`])
+        }
     }
 
 }
