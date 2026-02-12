@@ -13,7 +13,7 @@ export const routes: Routes = [
         component: PokedexForEachRegionComponent
     },
     {
-        path: 'pokemon/:id',
+        path: 'region/:id/pokemon/:pokemonId',
         component:  PokemonDetailsComponent
     }
 ];
