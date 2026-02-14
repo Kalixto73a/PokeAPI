@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Input } from '@angular/core'
 import { CommonModule } from '@angular/common';
@@ -17,7 +17,8 @@ import  Swal  from 'sweetalert2';
 export class SpriteForEachPokemonComponent implements OnInit{
 
   @Input() pokemonId : number
-  
+  @Output() load: EventEmitter<void> = new EventEmitter<void>()
+
   public sprite : string[]
 
   /**
@@ -37,7 +38,6 @@ export class SpriteForEachPokemonComponent implements OnInit{
 
     this.sprite = []
     this.loadSprites()
-    
 
   }
 
@@ -69,5 +69,9 @@ export class SpriteForEachPokemonComponent implements OnInit{
           }
         })
       });
+  }
+
+  public onSpriteLoaded(): void {
+    this.load.emit()
   }
 }
