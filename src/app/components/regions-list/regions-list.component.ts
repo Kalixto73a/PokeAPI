@@ -100,7 +100,8 @@ export class RegionsListComponent  implements OnInit{
     }
     
     public selectRegion(region: NamedAPIResource): void {
-      this.router.navigate(['/region', this.getRegionId(region)]);
+      const id = this.getRegionId(region)
+      this.router.navigate(['region', id]);
     }
 
 }
