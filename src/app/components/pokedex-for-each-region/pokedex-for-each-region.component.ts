@@ -28,6 +28,8 @@ export class PokedexForEachRegionComponent implements OnInit{
 
      private _regionId: number | null 
      private spritesLoaded: Set<number>
+     private initialPokemonCount: number
+     private remainingPokemons: Pokemon[]
 
      public loading: boolean 
      public pokemons: Pokemon[] 
@@ -58,6 +60,8 @@ export class PokedexForEachRegionComponent implements OnInit{
     private initializeValues(): void {
 
         this.loading = true
+        this.initialPokemonCount = 200
+        this.remainingPokemons = []
         this.pokemons = [] 
         this._regionId = null
         this.pokemonTypes = [] 
@@ -77,12 +81,15 @@ export class PokedexForEachRegionComponent implements OnInit{
             }))
         .subscribe({ 
             next: allPokedexData => { 
-                this.pokemons = allPokedexData
+                const allPokemons = allPokedexData
                 .flatMap(pokedexData => 
                     pokedexData.pokemon_entries.map(entry => { const url = entry.pokemon_species.url; const id = Number(url.split('/').filter(Boolean).pop())
                     return { name: entry.pokemon_species.name, url, id }
                  }) 
-                )  
+                ).filter((pokemon, index, self) =>
+                    index === self.findIndex(p => p.id === pokemon.id))
+                this.pokemons = allPokemons.slice(0, this.initialPokemonCount)
+                this.remainingPokemons = allPokemons.slice(this.initialPokemonCount)
             },
             error: () => {
                 this.loading = false
@@ -111,10 +118,11 @@ export class PokedexForEachRegionComponent implements OnInit{
     
     public onTypesLoaded(event: { pokemonId: number, types: PokemonTypes[] }){ 
 
-        const { pokemonId, types } = event
-        const background = this.calculateCardBackground(types)
-        const pokemon = this.pokemons.find(p => p.id === pokemonId)
-        if (pokemon) { pokemon.cardBackground = background; } 
+        const { pokemonId, types } = event;
+        const pokemon = this.pokemons.find(p => p.id === pokemonId);
+        if (pokemon) {
+            pokemon.cardBackground = this.calculateCardBackground(types); 
+        }
 
     } 
     
@@ -134,10 +142,24 @@ export class PokedexForEachRegionComponent implements OnInit{
     }
 
     public onSpriteLoaded(pokemonId: number) {
-        this.spritesLoaded.add(pokemonId);
+        this.spritesLoaded.add(pokemonId)
 
-        if (this.spritesLoaded.size === this.pokemons.length) {
-            this.loading = false
+        if (this.spritesLoaded.size >= Math.min(this.initialPokemonCount, this.pokemons.length)) {
+        this.loading = false
+        this.loadRemainingPokemons()
         }
     }
+
+    private loadRemainingPokemons() {
+        if (!this.remainingPokemons.length) return
+
+        const chunkSize = 50
+        const nextChunk = this.remainingPokemons.splice(0, chunkSize)
+        this.pokemons = [...this.pokemons, ...nextChunk]
+
+        if (this.remainingPokemons.length) {
+            setTimeout(() => this.loadRemainingPokemons(), 100)
+        }
+    }
+    
 }
