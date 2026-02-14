@@ -70,8 +70,7 @@ export class PokemonDetailsComponent implements OnInit{
     this.statsBackground = ''
     this.statsWidths = []
     this.getIdByUrl()
-    this.getRegionDetails();
-    this.loadPokemonDetails()
+
     
   } 
   
@@ -81,8 +80,8 @@ export class PokemonDetailsComponent implements OnInit{
       this.regionId = Number(params.get('id'))
       this.pokemonId = Number(params.get('pokemonId'))
       if (this.regionId && this.pokemonId) {
-        console.log('Region ID:', this.regionId);
-        console.log('Pokemon ID:', this.pokemonId);
+        this.getRegionDetails()
+        this.loadPokemonDetails()
         this.loading= false
       } else {
         Swal.fire({
