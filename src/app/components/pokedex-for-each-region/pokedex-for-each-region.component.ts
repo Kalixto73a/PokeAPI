@@ -12,12 +12,13 @@ import { forkJoin } from 'rxjs';
  import { PokemonTypes } from '../../model/Pokemons/pokemon-details'; 
  import { PokemonNumberComponent } from '../pokemon-number/pokemon-number.component'; 
  import { RegionPokedexIndex } from '../../core/config/pokedex-index'; 
+ import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
  import Swal from 'sweetalert2'; 
 
  @Component({ 
     selector: 'app-pokedex-for-each-region', 
     standalone: true, 
-    imports: [ CommonModule, SpriteForEachPokemonComponent, HttpClientModule, PokemonTypesComponent, PokemonNumberComponent], 
+    imports: [ CommonModule, SpriteForEachPokemonComponent, HttpClientModule, PokemonTypesComponent, PokemonNumberComponent, LoadingSpinnerComponent], 
     providers: [ PokedexAPICallService, RegionDetailsAPICallService ], 
     templateUrl: './pokedex-for-each-region.component.html', 
     styleUrl: './pokedex-for-each-region.component.css' 
@@ -26,6 +27,7 @@ import { forkJoin } from 'rxjs';
 export class PokedexForEachRegionComponent implements OnInit{
 
      private _regionId: number | null 
+     private spritesLoaded: Set<number>
 
      public loading: boolean 
      public pokemons: Pokemon[] 
@@ -55,18 +57,18 @@ export class PokedexForEachRegionComponent implements OnInit{
     
     private initializeValues(): void {
 
-        this.loading = false 
+        this.loading = true
         this.pokemons = [] 
         this._regionId = null
         this.pokemonTypes = [] 
         this.cardBackground = '#fff' 
+        this.spritesLoaded = new Set<number>()
         this.changeRoute() 
 
     } 
     
     private loadPokemonsForEachRegion(): void { 
         if (this._regionId === null) return
-        this.loading = true
         const indices = RegionPokedexIndex[this._regionId]
         this.getRegionDetailsService.getRegionPokedex(this._regionId, indices)
         .pipe(switchMap(pokedexes => { 
@@ -80,8 +82,7 @@ export class PokedexForEachRegionComponent implements OnInit{
                     pokedexData.pokemon_entries.map(entry => { const url = entry.pokemon_species.url; const id = Number(url.split('/').filter(Boolean).pop())
                     return { name: entry.pokemon_species.name, url, id }
                  }) 
-                ) 
-                this.loading = false 
+                )  
             },
             error: () => {
                 this.loading = false
@@ -132,4 +133,11 @@ export class PokedexForEachRegionComponent implements OnInit{
         }
     }
 
+    public onSpriteLoaded(pokemonId: number) {
+        this.spritesLoaded.add(pokemonId);
+
+        if (this.spritesLoaded.size === this.pokemons.length) {
+            this.loading = false
+        }
+    }
 }
