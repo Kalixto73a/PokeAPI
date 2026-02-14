@@ -101,8 +101,9 @@ export class PokedexForEachRegionComponent implements OnInit{
         this.route.paramMap
         .subscribe(params => { 
             const id = Number(params.get('id'))
-                if ((id)) { 
-                this._regionId = id; this.loadPokemonsForEachRegion()
+                if ((id && id !== this._regionId)) { 
+                    this._regionId = id
+                    this.loadPokemonsForEachRegion()
                 } 
         })
     } 
@@ -125,7 +126,9 @@ export class PokedexForEachRegionComponent implements OnInit{
 
     public goToPokemonDetails(id: number): void { 
         if (this._regionId !== null) {
-        this.router.navigate([`region/${this._regionId}/pokemon/${id}`])
+            this.router.navigate(['pokemon', id], {
+                relativeTo: this.route
+            })
         }
     }
 
