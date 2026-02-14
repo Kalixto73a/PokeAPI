@@ -60,7 +60,7 @@ export class PokedexForEachRegionComponent implements OnInit{
     private initializeValues(): void {
 
         this.loading = true
-        this.initialPokemonCount = 200
+        this.initialPokemonCount = 300
         this.remainingPokemons = []
         this.pokemons = [] 
         this._regionId = null
