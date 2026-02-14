@@ -6,7 +6,7 @@ import { PokemonTypesComponent } from '../pokemon-types/pokemon-types.component'
 import { DetailsForEachPokemonApicallService } from '../../services/pokemon-details/pokemon-details-apicall.service';
 import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component';
 import { Pokemon } from '../../model/Pokemons/pokedex';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { PokemonEvolutionChainComponent } from '../pokemon-evolution-chain/pokemon-evolution-chain.component';
 import Swal from 'sweetalert2';
@@ -52,6 +52,7 @@ export class PokemonDetailsComponent implements OnInit{
     private regionState: RegionStateService,
     private regionDetailsService: RegionDetailsAPICallService,
     private route: ActivatedRoute,
+    private router: Router, 
 
   ) {}
 
@@ -185,9 +186,10 @@ export class PokemonDetailsComponent implements OnInit{
   }
 
   public goBack(): void {
-    window.history.back();
+    const id = this.regionId
+    this.router.navigate(['region', id])
   }
-
+  
   public getRegionImage(regionId: number): string{
       return this.regionImage[regionId]
   }
