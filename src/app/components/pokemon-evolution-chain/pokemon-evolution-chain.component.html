@@ -10,7 +10,6 @@
          getCardBackgroundForPokemon(pokemonTypesMap[(getPokemonIdFromSpeciesUrl(pokemon.species.url))]) : '#fff' }"
          (click)="changePokemon(getPokemonIdFromSpeciesUrl(pokemon.species.url))">
 
-      <!-- Sprite y nombre -->
         <app-sprite-for-each-pokemon 
             [pokemonId]="getPokemonIdFromSpeciesUrl(pokemon.species.url)"
             class="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-64 lg:h-64 rounded-full overflow-hidden flex items-center justify-center">
@@ -20,7 +19,7 @@
 
       <img src="https://res.cloudinary.com/dzfqdntdw/image/upload/v1770229765/imgbin_9dfad48a770f2f4bc9fde3a1a5c6fb7c_s7cmyu.png" *ngIf="pokemon.evolution_details.length"
         class="w-8 h-8 mt-2 cursor-pointer mb-4"
-        (click)="openEvolutionPopup(pokemon.evolution_details)" draggable="false" alt="">
+        (click)="openEvolutionPopup(pokemon.evolution_details);$event.stopPropagation()" draggable="false" alt="">
 
     </div>
   </div>
