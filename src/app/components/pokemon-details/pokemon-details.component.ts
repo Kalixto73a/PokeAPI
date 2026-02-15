@@ -38,6 +38,8 @@ export class PokemonDetailsComponent implements OnInit{
   public originRegionImage: string | null
   public statsBackground: string
   public statsWidths: number[]
+  public selectedGender: 'male' | 'female'
+  public isShiny: boolean
 
   /**
    * 
@@ -73,6 +75,8 @@ export class PokemonDetailsComponent implements OnInit{
     this.originRegionImage = null
     this.statsBackground = ''
     this.statsWidths = []
+    this.selectedGender = 'male'
+    this.isShiny = false
     this.getIdByUrl()
 
     
@@ -173,4 +177,16 @@ export class PokemonDetailsComponent implements OnInit{
     this.router.navigate(['region', id])
   }
   
+  public showMale(): void{
+    this.selectedGender = 'male'
+  }
+
+  public showFemale(): void{
+    this.selectedGender = 'female'
+  }
+  
+  public toggleShiny(): void{
+    this.isShiny = !this.isShiny
+  }
+
 }
