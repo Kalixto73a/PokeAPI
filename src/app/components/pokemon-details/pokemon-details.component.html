@@ -112,10 +112,10 @@
     <div
       class="col-span-12 lg:col-span-3 flex flex-col items-center justify-center space-y-3 bg-white/30 rounded-2xl p-3 lg:p-4 border-4 border-black text-black"
     >
-      <h3 class="uppercase font-bold text-lg lg:text-xl">{{ regionName }}</h3>
+      <h3 class="uppercase font-bold text-lg lg:text-xl">{{ originRegionName }}</h3>
       <img
         *ngIf="regionId"
-        [src]="getRegionImage(regionId)"
+        [src]="originRegionImage"
         alt="Region image"
         class="w-32 lg:w-full h-auto rounded-xl border-4 border-black"
         draggable="false"
