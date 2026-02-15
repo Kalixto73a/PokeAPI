@@ -7,7 +7,8 @@
                 w-36 sm:w-40 md:w-48 lg:w-[400px] xl:w-[400px]
                 h-[350px] bg-white/30 border-2 border-black"
          [ngStyle]="{ 'background': pokemonTypesMap[(getPokemonIdFromSpeciesUrl(pokemon.species.url))] ? 
-         getCardBackgroundForPokemon(pokemonTypesMap[(getPokemonIdFromSpeciesUrl(pokemon.species.url))]) : '#fff' }">
+         getCardBackgroundForPokemon(pokemonTypesMap[(getPokemonIdFromSpeciesUrl(pokemon.species.url))]) : '#fff' }"
+         (click)="changePokemon(getPokemonIdFromSpeciesUrl(pokemon.species.url))">
 
       <!-- Sprite y nombre -->
         <app-sprite-for-each-pokemon 
