@@ -44,6 +44,7 @@ export class RegionsListComponent  implements OnInit{
 
   private initializeValues(): void{
 
+    this.firstAdvice()
     this.regions= []
     this.regionImages = RegionImages
     this. loading = false
@@ -78,6 +79,18 @@ export class RegionsListComponent  implements OnInit{
         });
     }
 
+    private firstAdvice(): void {
+      Swal.fire({
+        icon: 'info',
+        title: 'Welcome',
+        html: 'Please select a region to see his pokemons.',
+        theme: 'dark',
+        confirmButtonText: 'Okey',
+        customClass: {
+          confirmButton: 'bg-[#FFD700] text-black hover:bg-[#DAA520]'
+        },
+      })
+    }
     public getRegionId(region: NamedAPIResource): number {
       return Number(region.url.split('/').filter(Boolean).pop());
     }
@@ -87,7 +100,8 @@ export class RegionsListComponent  implements OnInit{
     }
     
     public selectRegion(region: NamedAPIResource): void {
-      this.router.navigate(['/region', this.getRegionId(region)]);
+      const id = this.getRegionId(region)
+      this.router.navigate(['region', id]);
     }
 
 }

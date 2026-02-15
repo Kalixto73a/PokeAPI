@@ -26,7 +26,10 @@ jobs:
         run: npm install
 
       - name: Build Angular app
-        run: npm run build --prod
+        run: npm run build -- --base-href /PokeAPI/
+
+      - name: Add SPA fallback (404.html)
+        run: cp dist/poke-api/browser/index.html dist/poke-api/browser/404.html
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4

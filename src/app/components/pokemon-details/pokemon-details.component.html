@@ -71,7 +71,7 @@
             background-image: url(&quot;https://res.cloudinary.com/dzfqdntdw/image/upload/v1770231053/kilogramo_mbfvwr.png&quot;);
           "
         >
-          <div class="text-black mt-4 lg:text-base font-semibold">
+          <div class="text-black mt-4 lg:text-xs font-semibold">
             {{ getWeightInKg(pokemon.weight) }} kg
           </div>
         </div>
@@ -114,8 +114,8 @@
     >
       <h3 class="uppercase font-bold text-lg lg:text-xl">{{ regionName }}</h3>
       <img
-        *ngIf="regionImage"
-        [src]="regionImage"
+        *ngIf="regionId"
+        [src]="getRegionImage(regionId)"
         alt="Region image"
         class="w-32 lg:w-full h-auto rounded-xl border-4 border-black"
         draggable="false"

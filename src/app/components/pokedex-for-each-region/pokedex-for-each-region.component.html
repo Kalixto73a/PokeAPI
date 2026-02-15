@@ -1,7 +1,8 @@
-<div *ngIf="!loading" class="flex flex-wrap justify-center pt-6 pb-6 gap-6 px-1">
+<app-loading-spinner *ngIf="loading"></app-loading-spinner>
+<div class="flex flex-wrap justify-center pt-6 pb-6 gap-6 px-1">
     <div class="flex flex-col items-center w-[100px] lg:w-[320px] lg:h-[400px] rounded-xl p-2 pb-4 transform transition-transform duration-200 hover:scale-105 font-bold" (click)="goToPokemonDetails(pokemon.id)"
     *ngFor="let pokemon of pokemons" [ngStyle]="{ 'background': pokemon.cardBackground || '#fff' }">
-        <app-sprite-for-each-pokemon [pokemonId]="pokemon.id" class="items-center"></app-sprite-for-each-pokemon>
+        <app-sprite-for-each-pokemon [pokemonId]="pokemon.id" class="items-center" (load)="onSpriteLoaded(pokemon.id)"></app-sprite-for-each-pokemon>
         <h1 class="uppercase gap-2 text-[0.8rem] lg:text-[1.5rem]">{{ pokemon.name }}</h1>
         <app-pokemon-number [pokemonId]="pokemon.id"></app-pokemon-number>
         <app-pokemon-types [pokemonId]="pokemon.id" (typesLoaded)="onTypesLoaded($event)" class="flex justify-center items-center"></app-pokemon-types>

@@ -1,3 +1,3 @@
 <div class="flex items-center justify-center">
-    <img *ngIf="sprite" [src]="sprite[0]" alt="Front Sprite"  draggable="false" class="w-full lg:w-full lg:h-[270px] object-contain"/>
+    <img *ngIf="sprite" [src]="sprite[0]" alt="Front Sprite"  draggable="false" class="w-full lg:w-full lg:h-[270px] object-contain" (load)="onSpriteLoaded()"/>
 </div>

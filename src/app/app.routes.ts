@@ -4,16 +4,32 @@ import { PokedexForEachRegionComponent } from './components/pokedex-for-each-reg
 import { PokemonDetailsComponent } from './components/pokemon-details/pokemon-details.component';
 
 export const routes: Routes = [
-    {
+  {
+    path: '',
+    redirectTo: 'regionslist',
+    pathMatch: 'full'
+  },
+  {
+    path: 'regionslist',
+    loadComponent: () =>
+      import('./components/regions-list/regions-list.component')
+        .then(c => c.RegionsListComponent)
+  },
+  {
+    path: 'region/:id',
+    children: [
+      {
         path: '',
-        component: RegionsListComponent,
-    },
-    {
-        path: 'region/:id',
-        component: PokedexForEachRegionComponent
-    },
-    {
-        path: 'pokemon/:id',
-        component:  PokemonDetailsComponent
-    }
-];
+        loadComponent: () =>
+          import('./components/pokedex-for-each-region/pokedex-for-each-region.component')
+            .then(c => c.PokedexForEachRegionComponent)
+      },
+      {
+        path: 'pokemon/:pokemonId',
+        loadComponent: () =>
+          import('./components/pokemon-details/pokemon-details.component')
+            .then(c => c.PokemonDetailsComponent)
+      }
+    ]
+  }
+]
