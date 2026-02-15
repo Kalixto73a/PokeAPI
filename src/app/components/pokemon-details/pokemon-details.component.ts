@@ -107,7 +107,6 @@ export class PokemonDetailsComponent implements OnInit{
       this.regionDetailsService.getRegionDetails(this.regionId)
       .subscribe({
         next: (response) =>{
-          console.log('Region Details:', response)
           this.regionName = response.name
           this.regionId = response.id
           this.loading = false;
@@ -134,7 +133,6 @@ export class PokemonDetailsComponent implements OnInit{
     if (this.pokemonId) {
       this.detailsForEachPokemonService.getDetailsOfPokemon(this.pokemonId)
         .subscribe({next: details => {
-          console.log(details)
           this.pokemon = details
           this.updateStatsBackground()
           this.animateStats()
@@ -163,7 +161,6 @@ export class PokemonDetailsComponent implements OnInit{
   public updateStatsBackground() {
     if(this.pokemon?.types){
       this.statsBackground = this.calculateCardBackground(this.pokemon.types);
-      console.log(this.statsBackground)
     }
   }
   public calculateCardBackground(types: PokemonTypes[]): string {
