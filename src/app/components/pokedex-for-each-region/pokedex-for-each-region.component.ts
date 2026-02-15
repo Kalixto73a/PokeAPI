@@ -1,4 +1,5 @@
 import { Component, Input, OnInit} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'; 
 import { PokedexAPICallService } from '../../services/pokedex-apicall/pokedex-apicall.service'; 
 import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component'; 
@@ -14,11 +15,13 @@ import { forkJoin } from 'rxjs';
  import { RegionPokedexIndex } from '../../core/config/pokedex-index'; 
  import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
  import Swal from 'sweetalert2'; 
+ import { Subject } from 'rxjs';
+ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
  @Component({ 
     selector: 'app-pokedex-for-each-region', 
     standalone: true, 
-    imports: [ CommonModule, SpriteForEachPokemonComponent, HttpClientModule, PokemonTypesComponent, PokemonNumberComponent, LoadingSpinnerComponent], 
+    imports: [ CommonModule, SpriteForEachPokemonComponent, HttpClientModule, PokemonTypesComponent, PokemonNumberComponent, LoadingSpinnerComponent, FormsModule], 
     providers: [ PokedexAPICallService, RegionDetailsAPICallService ], 
     templateUrl: './pokedex-for-each-region.component.html', 
     styleUrl: './pokedex-for-each-region.component.css' 
@@ -26,12 +29,16 @@ import { forkJoin } from 'rxjs';
 
 export class PokedexForEachRegionComponent implements OnInit{
 
+    private searchSubject: Subject<string>
      private _regionId: number | null 
      private spritesLoaded: Set<number>
      private initialPokemonCount: number
      private remainingPokemons: Pokemon[]
 
+     
      public loading: boolean 
+     public searchText: string
+     public filteredPokemons: Pokemon[]
      public pokemons: Pokemon[] 
      public pokemonTypes: PokemonTypes[] 
      public cardBackground: string
@@ -60,6 +67,7 @@ export class PokedexForEachRegionComponent implements OnInit{
     private initializeValues(): void {
 
         this.loading = true
+        this.searchSubject = new Subject<string>()
         this.initialPokemonCount = 300
         this.remainingPokemons = []
         this.pokemons = [] 
@@ -67,8 +75,11 @@ export class PokedexForEachRegionComponent implements OnInit{
         this.pokemonTypes = [] 
         this.cardBackground = '#fff' 
         this.spritesLoaded = new Set<number>()
+        this.filteredPokemons = []
+        this.searchText = ''
+        this.initSearch()
         this.changeRoute() 
-
+        
     } 
     
     private loadPokemonsForEachRegion(): void { 
@@ -83,12 +94,13 @@ export class PokedexForEachRegionComponent implements OnInit{
             next: allPokedexData => { 
                 const allPokemons = allPokedexData
                 .flatMap(pokedexData => 
-                    pokedexData.pokemon_entries.map(entry => { const url = entry.pokemon_species.url; const id = Number(url.split('/').filter(Boolean).pop())
+                    pokedexData.pokemon_entries.map(entry => {const url = entry.pokemon_species.url; const id = Number(url.split('/').filter(Boolean).pop())
                     return { name: entry.pokemon_species.name, url, id }
                  }) 
                 ).filter((pokemon, index, self) =>
                     index === self.findIndex(p => p.id === pokemon.id))
                 this.pokemons = allPokemons.slice(0, this.initialPokemonCount)
+                this.filteredPokemons = [...this.pokemons]
                 this.remainingPokemons = allPokemons.slice(this.initialPokemonCount)
             },
             error: () => {
@@ -119,9 +131,9 @@ export class PokedexForEachRegionComponent implements OnInit{
     public onTypesLoaded(event: { pokemonId: number, types: PokemonTypes[] }){ 
 
         const { pokemonId, types } = event;
-        const pokemon = this.pokemons.find(p => p.id === pokemonId);
+        const pokemon = this.pokemons.find(p => p.id === pokemonId)
         if (pokemon) {
-            pokemon.cardBackground = this.calculateCardBackground(types); 
+            pokemon.cardBackground = this.calculateCardBackground(types);
         }
 
     } 
@@ -156,10 +168,38 @@ export class PokedexForEachRegionComponent implements OnInit{
         const chunkSize = 50
         const nextChunk = this.remainingPokemons.splice(0, chunkSize)
         this.pokemons = [...this.pokemons, ...nextChunk]
-
+        this.applyFilter()
         if (this.remainingPokemons.length) {
             setTimeout(() => this.loadRemainingPokemons(), 100)
         }
     }
-    
+
+    public initSearch(): void {
+        this.searchSubject
+        .pipe(
+            debounceTime(500),          
+            distinctUntilChanged()      
+        )
+        .subscribe(value => {
+            this.searchText = value
+            this.applyFilter()
+        })
+    }
+
+    public applyFilter(): void {
+        const text = this.searchText.toLowerCase().trim()
+        if (!text) {
+            this.filteredPokemons = [...this.pokemons]
+            return
+        }
+        this.filteredPokemons = this.pokemons.filter(pokemon =>
+            pokemon.name.toLowerCase().includes(text)
+        )
+    }
+
+    public onSearchChange(event: Event): void {
+         const input = event.target as HTMLInputElement
+         this.searchSubject.next(input.value)
+    }
+
 }
