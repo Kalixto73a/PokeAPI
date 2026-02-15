@@ -77,17 +77,17 @@ export class PokemonEvolutionChainComponent implements OnInit {
             chainData => {
               this.evolutionChain = chainData
               const observables = this.getEvolutionChainOfPokemon(chainData.chain).map(p => {
-                const id = this.getPokemonIdFromSpeciesUrl(p.species.url);
-                return this.detailsForEachPokemonService.getDetailsOfPokemon(id);
-              });
+                const id = this.getPokemonIdFromSpeciesUrl(p.species.url)
+                return this.detailsForEachPokemonService.getDetailsOfPokemon(id)
+              })
 
               forkJoin(observables).subscribe(results => {
                 results.forEach(pokemonData => {
                   const id = Number(pokemonData.id)
-                  this.pokemonTypesMap[id] = pokemonData.types;
-                });
-                this.loading = false;
-              });
+                  this.pokemonTypesMap[id] = pokemonData.types
+                })
+                this.loading = false
+              })
             }
           )
         }
@@ -103,7 +103,7 @@ export class PokemonEvolutionChainComponent implements OnInit {
           confirmButtonColor: '#FF0000',
         }).then((result) => {
           if (result.isConfirmed) {
-            window.location.reload();
+            window.location.reload()
           }
         })
       }
@@ -122,7 +122,7 @@ export class PokemonEvolutionChainComponent implements OnInit {
   }
 
   public getPokemonIdFromSpeciesUrl(url: string): number {
-    if (!url) return 0;
+    if (!url) return 0
     const parts = url.split('/').filter(p => p)
     return +parts[parts.length - 1]
   }
@@ -133,12 +133,12 @@ export class PokemonEvolutionChainComponent implements OnInit {
     this.detailsForEachPokemonService.getDetailsOfPokemon(pokemonId)
       .subscribe(pokemonData => {
         this.pokemonTypesMap[pokemonId] = pokemonData.types
-      });
+      })
   }
 
 
   public getValidEvolutionRequirements(details: EvolutionDetails[]): EvolutionDetails[] {
-    if (!details) return [];
+    if (!details) return []
     console.log(details)
     return details.filter(detail => 
       detail.gender != null ||
@@ -168,7 +168,7 @@ export class PokemonEvolutionChainComponent implements OnInit {
   }
 
   public getTriggerText(detail: EvolutionDetails): string {
-    if (!detail.trigger) return '';
+    if (!detail.trigger) return ''
 
     switch (detail.trigger.name) {
       case 'level-up':
@@ -218,59 +218,59 @@ export class PokemonEvolutionChainComponent implements OnInit {
       case 'tower-of-waters':
         return 'Choosing tower of Waters or using Scroll of Waters'
       default:
-        return detail.trigger.name.replace('-', ' ');
+        return detail.trigger.name.replace('-', ' ')
     }
   }
 
   public getPhysicalStatsText(value: number | null | undefined): string {
     if (value === null || value === undefined) {
-      return '';
+      return ''
     }
 
     switch (value) {
       case -1:
-        return 'Attack < Defense';
+        return 'Attack < Defense'
       case 0:
-        return 'Attack = Defense';
+        return 'Attack = Defense'
       case 1:
-        return 'Attack > Defense';
+        return 'Attack > Defense'
       default:
-        return 'Unknown condition';
+        return 'Unknown condition'
     }
   }
 
   public getGenderTypeText(value: number | null | undefined) : string {
 
     if (value === null || value === undefined) {
-      return '';
+      return ''
     }
     
     switch (value) {
       case 1:
-        return 'Female';
+        return 'Female'
       case 2:
-        return 'Male';
+        return 'Male'
       default:
-        return 'Unknown gender';
+        return 'Unknown gender'
     }
   
   }
 
 
 public buildEvolutionRequirements(details: any[]): string[] {
-  const reqs: string[] = [];
+  const reqs: string[] = []
 
   details.forEach(detail => {
 
     if (detail.trigger?.name) {
 
-      let triggerText = this.getTriggerText(detail);
+      let triggerText = this.getTriggerText(detail)
 
-      reqs.push(triggerText);
+      reqs.push(triggerText)
 
     }
-  });
-  return reqs;
+  })
+  return reqs
 }
 
 public openEvolutionPopup(details: EvolutionDetails[]): void {
@@ -280,13 +280,13 @@ public openEvolutionPopup(details: EvolutionDetails[]): void {
       title: 'Evolution',
       text: 'This pokemon dont have special requirements.',
       theme: 'dark'
-    });
-    return;
+    })
+    return
   }
 
   const requirements = details
     .filter(detail => detail.trigger?.name)
-    .map(detail => this.getTriggerText(detail));
+    .map(detail => this.getTriggerText(detail))
 
   if (!requirements.length) {
     Swal.fire({
@@ -294,15 +294,15 @@ public openEvolutionPopup(details: EvolutionDetails[]): void {
       title: 'Evolution',
       text: 'This pokemon does not have special requirements.',
       theme: 'dark'
-    });
-    return;
+    })
+    return
   }
 
   const html = `
     <ul style="text-align:center">
       ${requirements.map(r => `<li>• ${r}</li>`).join('')}
     </ul>
-  `;
+  `
 
   Swal.fire({
       icon: 'info',
@@ -310,13 +310,13 @@ public openEvolutionPopup(details: EvolutionDetails[]): void {
       html,
       theme: 'dark',
       confirmButtonText: 'Thanks'
-    });
+    })
   }
 
   private toTitleCase(text: string): string {
     return text
       .replace(/-/g, ' ')
-      .replace(/\b\w/g, char => char.toUpperCase());
+      .replace(/\b\w/g, char => char.toUpperCase())
   }
 
   public getCardBackgroundForPokemon(types: PokemonTypes[]): string {
@@ -324,13 +324,31 @@ public openEvolutionPopup(details: EvolutionDetails[]): void {
   }
 
   public calculateCardBackground(types: PokemonTypes[]): string {
-    if (!types || types.length === 0) return '#fff';
+    if (!types || types.length === 0) return '#fff'
 
-    const colors = types.map(t => PokemonTypesColors[t.type.name] ?? '#777');
+    const colors = types.map(t => PokemonTypesColors[t.type.name] ?? '#777')
 
-    if (colors.length === 1) return colors[0];
+    if (colors.length === 1) return colors[0]
 
-    return `linear-gradient(135deg, ${colors.join(', ')})`;
+    return `linear-gradient(135deg, ${colors.join(', ')})`
+  }
+
+  public changePokemon(pokemonId: number) {
+    const regionId = this.getRegionByPokemonId(pokemonId)
+    window.location.assign(`/PokeAPI/region/${regionId}/pokemon/${pokemonId}`)
+  }
+
+  private getRegionByPokemonId(pokemonId: number): number {
+    if (pokemonId >= 1 && pokemonId <= 151) return 1
+    if (pokemonId >= 152 && pokemonId <= 251) return 2
+    if (pokemonId >= 252 && pokemonId <= 386) return 3
+    if (pokemonId >= 387 && pokemonId <= 493) return 4
+    if (pokemonId >= 494 && pokemonId <= 649) return 5
+    if (pokemonId >= 650 && pokemonId <= 721) return 6
+    if (pokemonId >= 722 && pokemonId <= 809) return 7
+    if (pokemonId >= 810 && pokemonId <= 905) return 8
+    if (pokemonId >= 906 && pokemonId <= 1010) return 9
+    return 1
   }
 
 }
