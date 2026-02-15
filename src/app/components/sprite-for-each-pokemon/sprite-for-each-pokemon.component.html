@@ -1,3 +1,18 @@
-<div class="flex items-center justify-center">
-    <img *ngIf="sprite" [src]="sprite[0]" alt="Front Sprite"  draggable="false" class="w-full lg:w-full lg:h-[270px] object-contain" (load)="onSpriteLoaded()"/>
-</div>
+<img
+  *ngIf="frontSprite && !backSprite"
+  [src]="frontSprite"
+  (load)="onSpriteLoaded()"
+  class="w-full lg:w-full lg:h-[270px] object-contain"
+  draggable="false"
+  alt="Pokémon Sprite"
+/>
+
+<img
+  *ngIf="frontSprite && backSprite"
+  [src]="showFront ? frontSprite : backSprite"
+  (click)="toggleSprite()"
+  (load)="onSpriteLoaded()"
+  class="cursor-pointer w-full lg:w-full lg:h-[270px] object-contain"
+  draggable="false"
+  alt="Pokémon Sprite"
+/>
