@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { EvolutionChain, EvolutionChainOfPokemon, EvolutionDetails } from '../../model/Pokemons/pokemon-evolution-chain';
 import { PokemonSpeciesApicallService } from '../../services/pokemon-species-apicall/pokemon-species-apicall.service';
 import { EvolutionChainApicallService } from '../../services/evolution-chain-apicall/evolution-chain-apicall.service';
@@ -8,27 +8,32 @@ import { DetailsForEachPokemonApicallService } from '../../services/pokemon-deta
 import { PokemonTypes } from '../../model/Pokemons/pokemon-details';
 import { PokemonTypesColors } from '../../core/config/types-colors';
 import { forkJoin } from 'rxjs';
-import  Swal  from 'sweetalert2';
-
+import Swal from 'sweetalert2';
+import { PokemonRegionRanges } from '../../core/config/pokemon-regions-range';
+import { PhysicalStatsTexts } from '../../core/config/physical-stats-texts';
+import { GenderTypes } from '../../core/config/gender-types';
 
 @Component({
   selector: 'app-pokemon-evolution-chain',
   standalone: true,
-  imports: [ CommonModule, SpriteForEachPokemonComponent, ],
-  providers: [ PokemonSpeciesApicallService, EvolutionChainApicallService, DetailsForEachPokemonApicallService ],
+  imports: [CommonModule, SpriteForEachPokemonComponent],
+  providers: [
+    PokemonSpeciesApicallService,
+    EvolutionChainApicallService,
+    DetailsForEachPokemonApicallService
+  ],
   templateUrl: './pokemon-evolution-chain.component.html',
   styleUrl: './pokemon-evolution-chain.component.css'
 })
-
 export class PokemonEvolutionChainComponent implements OnInit {
 
-  @Input() speciesUrl: string
+  @Input() speciesUrl!: string
 
   public loading: boolean
-  public evolutionChain: EvolutionChain | null 
+  public evolutionChain: EvolutionChain | null
   public pokemonTypesMap: Record<number, PokemonTypes[]>
 
-  /**
+   /**
    * 
    * Constructor
    * 
@@ -39,57 +44,32 @@ export class PokemonEvolutionChainComponent implements OnInit {
    */
 
   constructor(
-
     private speciesService: PokemonSpeciesApicallService,
     private evolutionChainService: EvolutionChainApicallService,
     private detailsForEachPokemonService: DetailsForEachPokemonApicallService
-
   ) {}
 
-
   public ngOnInit(): void {
-    
     this.initializeValues()
-
-  }
-  
-  private initializeValues(): void{
-
-      this.loading = false
-      this.evolutionChain = null
-      this.pokemonTypesMap = {}
-      this.getEvolutionChainUrlFormSpecies()
-    
   }
 
-  private getEvolutionChainUrlFormSpecies(): void{
+  private initializeValues(): void {
+    this.loading = false
+    this.evolutionChain = null
+    this.pokemonTypesMap = {}
+    this.getEvolutionChainUrlFromSpecies()
+  }
 
+  private getEvolutionChainUrlFromSpecies(): void {
     if (!this.speciesUrl) return
-    
+
     this.loading = true
-    this.speciesService.getPokemonSpeciesData(this.speciesUrl)
-    .subscribe({
+    this.speciesService.getPokemonSpeciesData(this.speciesUrl).subscribe({
       next: speciesData => {
         const evolutionUrl = speciesData.evolution_chain?.url
         if (evolutionUrl) {
           this.evolutionChainService.getPokemonEvolutionChain(evolutionUrl)
-          .subscribe(
-            chainData => {
-              this.evolutionChain = chainData
-              const observables = this.getEvolutionChainOfPokemon(chainData.chain).map(p => {
-                const id = this.getPokemonIdFromSpeciesUrl(p.species.url)
-                return this.detailsForEachPokemonService.getDetailsOfPokemon(id)
-              })
-
-              forkJoin(observables).subscribe(results => {
-                results.forEach(pokemonData => {
-                  const id = Number(pokemonData.id)
-                  this.pokemonTypesMap[id] = pokemonData.types
-                })
-                this.loading = false
-              })
-            }
-          )
+            .subscribe(chainData => this.processEvolutionChain(chainData))
         }
       },
       error: () => {
@@ -101,70 +81,62 @@ export class PokemonEvolutionChainComponent implements OnInit {
           theme: 'dark',
           confirmButtonText: 'Reload Page',
           confirmButtonColor: '#FF0000',
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload()
-          }
+        })
+        .then(result => { if (result.isConfirmed) window.location.reload()
         })
       }
     })
   }
 
-  public getEvolutionChainOfPokemon( result: EvolutionChainOfPokemon ): EvolutionChainOfPokemon[] {
+  private processEvolutionChain(chainData: EvolutionChain): void {
+    this.evolutionChain = chainData
+    const observables = this.getEvolutionChainOfPokemon(chainData.chain)
+      .map(p => this.detailsForEachPokemonService.getDetailsOfPokemon(this.getPokemonIdFromSpeciesUrl(p.species.url)))
 
+    forkJoin(observables).subscribe(results => {
+      results.forEach(pokemonData => {
+        this.pokemonTypesMap[Number(pokemonData.id)] = pokemonData.types
+      })
+      this.loading = false
+    })
+  }
+
+  public getEvolutionChainOfPokemon(result: EvolutionChainOfPokemon): EvolutionChainOfPokemon[] {
     const results: EvolutionChainOfPokemon[] = []
     if (!result) return results
     results.push(result)
-    result.evolves_to.forEach(child => {
-      results.push(...this.getEvolutionChainOfPokemon(child))
-    })
+    result.evolves_to.forEach(child => results.push(...this.getEvolutionChainOfPokemon(child)))
     return results
   }
 
   public getPokemonIdFromSpeciesUrl(url: string): number {
-    if (!url) return 0
     const parts = url.split('/').filter(p => p)
     return +parts[parts.length - 1]
   }
 
-  public loadPokemonTypes(pokemonId: number): void {
-    if (this.pokemonTypesMap[pokemonId]) return
-
-    this.detailsForEachPokemonService.getDetailsOfPokemon(pokemonId)
-      .subscribe(pokemonData => {
-        this.pokemonTypesMap[pokemonId] = pokemonData.types
-      })
+  public getCardBackgroundForPokemon(types: PokemonTypes[]): string {
+    if (!types || types.length === 0) return '#fff'
+    const colors = types.map(t => PokemonTypesColors[t.type.name] ?? '#777')
+    return colors.length === 1 ? colors[0] : `linear-gradient(135deg, ${colors.join(', ')})`
   }
 
+  public changePokemon(pokemonId: number) {
+    const regionId = this.getRegionByPokemonId(pokemonId)
+    window.location.assign(`/PokeAPI/region/${regionId}/pokemon/${pokemonId}`)
+  }
 
-  public getValidEvolutionRequirements(details: EvolutionDetails[]): EvolutionDetails[] {
-    if (!details) return []
-    console.log(details)
-    return details.filter(detail => 
-      detail.gender != null ||
-      detail.held_item?.name != null ||
-      detail.item?.name != null ||
-      detail.known_move?.name != null ||
-      detail.known_move_type?.name != null ||
-      detail.location != null ||
-      detail.min_affection != null ||
-      detail.min_beauty != null ||
-      detail.min_damage_taken != null ||
-      detail.min_happiness != null ||
-      detail.min_level != null ||
-      detail.min_move_count != null ||
-      detail.min_steps != null ||
-      detail.needs_overworld_rain != null ||
-      detail.needs_multiplayer != null ||
-      detail.party_species != null ||
-      detail.party_type != null ||
-      detail.relative_physical_stats != null ||
-      detail.time_of_day != null ||
-      detail.trade_species != null ||
-      detail.turn_upside_down != null ||
-      detail.trigger?.name != null ||
-      detail.used_move?.name != null,
-    )
+  private getRegionByPokemonId(pokemonId: number): number {
+    for (const entry of PokemonRegionRanges) {
+      const r = entry.range
+      if (Array.isArray(r[0])) { 
+        for (const [start, end] of r as [number, number][]) {
+          if (pokemonId >= start && pokemonId <= end) return entry.regionId
+        }
+      } else if ((r as number[]).includes(pokemonId)) {
+        return entry.regionId
+      }
+    }
+    return 1
   }
 
   public getTriggerText(detail: EvolutionDetails): string {
@@ -188,7 +160,7 @@ export class PokemonEvolutionChainComponent implements OnInit {
         if(detail.location) return `Leveling up in ${this.toTitleCase(detail.location.name)}`
         if (detail.min_level) return `Evolves at level ${detail.min_level}`
         if(detail.min_steps) return `minumum steps walked`
-        if(detail.known_move) return `Knowing ${this.toTitleCase(detail.known_move.name.replace('-', ' '))}`
+        if(detail.known_move) return `Knowing ${this.toTitleCase(detail.known_move.name.replace('-', ' '))} and leveling up`
         return `level up`
       case 'use-item':
         if (detail.item && detail.gender) return `Being ${this.getGenderTypeText(detail.gender)} and using ${this.toTitleCase(detail.item.name.replace('-', ' '))}`
@@ -206,7 +178,8 @@ export class PokemonEvolutionChainComponent implements OnInit {
       case 'shed':
         return 'If there is a space in the team + a pokeball'
       case 'strong-style-move':
-        return 'using strong-style'
+        if (detail.min_move_count) return `Using an strong-style move ${detail.min_move_count} times`
+        return 'Using an strong-style move specific times'
       case 'spin':
         return 'spinning with a sweet equiped on the pokemon'
       case 'take-damage':
@@ -217,100 +190,30 @@ export class PokemonEvolutionChainComponent implements OnInit {
         return 'Chossing tower of Darkness or using Scroll of Darkness'
       case 'tower-of-waters':
         return 'Choosing tower of Waters or using Scroll of Waters'
+      case 'agile-style-move':
+        if (detail.min_move_count) return `Using an agile-style move ${detail.min_move_count} times`
+        return 'Using an agile-style move specific times'
       default:
         return detail.trigger.name.replace('-', ' ')
     }
   }
 
-  public getPhysicalStatsText(value: number | null | undefined): string {
-    if (value === null || value === undefined) {
-      return ''
+  public openEvolutionPopup(details: EvolutionDetails[]): void {
+    if (!details.length) {
+      Swal.fire({ icon: 'info', title: 'Evolution', text: 'This pokemon does not have special requirements.', theme: 'dark' })
+      return
     }
 
-    switch (value) {
-      case -1:
-        return 'Attack < Defense'
-      case 0:
-        return 'Attack = Defense'
-      case 1:
-        return 'Attack > Defense'
-      default:
-        return 'Unknown condition'
-    }
+    const html = `<ul style="text-align:center">
+      ${details.filter(d => d.trigger?.name).map(d => `<li>• ${this.getTriggerText(d)}</li>`).join('')}
+    </ul>`
+
+    Swal.fire({ icon: 'info', title: 'Evolution Requirements', html, theme: 'dark', confirmButtonText: 'Thanks' })
   }
 
-  public getGenderTypeText(value: number | null | undefined) : string {
-
-    if (value === null || value === undefined) {
-      return ''
-    }
-    
-    switch (value) {
-      case 1:
-        return 'Female'
-      case 2:
-        return 'Male'
-      default:
-        return 'Unknown gender'
-    }
-  
-  }
-
-
-public buildEvolutionRequirements(details: any[]): string[] {
-  const reqs: string[] = []
-
-  details.forEach(detail => {
-
-    if (detail.trigger?.name) {
-
-      let triggerText = this.getTriggerText(detail)
-
-      reqs.push(triggerText)
-
-    }
-  })
-  return reqs
-}
-
-public openEvolutionPopup(details: EvolutionDetails[]): void {
-  if (!details.length) {
-    Swal.fire({
-      icon: 'info',
-      title: 'Evolution',
-      text: 'This pokemon dont have special requirements.',
-      theme: 'dark'
-    })
-    return
-  }
-
-  const requirements = details
-    .filter(detail => detail.trigger?.name)
-    .map(detail => this.getTriggerText(detail))
-
-  if (!requirements.length) {
-    Swal.fire({
-      icon: 'info',
-      title: 'Evolution',
-      text: 'This pokemon does not have special requirements.',
-      theme: 'dark'
-    })
-    return
-  }
-
-  const html = `
-    <ul style="text-align:center">
-      ${requirements.map(r => `<li>• ${r}</li>`).join('')}
-    </ul>
-  `
-
-  Swal.fire({
-      icon: 'info',
-      title: 'Evolution Requirements',
-      html,
-      theme: 'dark',
-      confirmButtonText: 'Thanks'
-    })
+  private getPhysicalStatsText(value: number | null | undefined): string {
+    if (value === null || value === undefined) return ''
+    return PhysicalStatsTexts[value] ?? 'Unknown condition'
   }
 
   private toTitleCase(text: string): string {
@@ -319,38 +222,9 @@ public openEvolutionPopup(details: EvolutionDetails[]): void {
       .replace(/\b\w/g, char => char.toUpperCase())
   }
 
-  public getCardBackgroundForPokemon(types: PokemonTypes[]): string {
-    return this.calculateCardBackground(types)
+  
+  private getGenderTypeText(value: number | null | undefined): string {
+    if (value === null || value === undefined) return ''
+    return GenderTypes[value] ?? 'Unknown gender'
   }
-
-  public calculateCardBackground(types: PokemonTypes[]): string {
-    if (!types || types.length === 0) return '#fff'
-
-    const colors = types.map(t => PokemonTypesColors[t.type.name] ?? '#777')
-
-    if (colors.length === 1) return colors[0]
-
-    return `linear-gradient(135deg, ${colors.join(', ')})`
-  }
-
-  public changePokemon(pokemonId: number) {
-    const regionId = this.getRegionByPokemonId(pokemonId)
-    window.location.assign(`/PokeAPI/region/${regionId}/pokemon/${pokemonId}`)
-  }
-
-  private getRegionByPokemonId(pokemonId: number): number {
-    if (pokemonId >= 1 && pokemonId <= 151) return 1
-    if (pokemonId >= 152 && pokemonId <= 251) return 2
-    if (pokemonId >= 252 && pokemonId <= 386) return 3
-    if (pokemonId >= 387 && pokemonId <= 493) return 4
-    if (pokemonId >= 494 && pokemonId <= 649) return 5
-    if (pokemonId >= 650 && pokemonId <= 721) return 6
-    if (pokemonId >= 722 && pokemonId <= 809) return 7
-    if (pokemonId >= 810 && pokemonId <= 905) return 8
-    if (pokemonId >= 906 && pokemonId <= 1010) return 9
-    return 1
-  }
-
 }
-
-
