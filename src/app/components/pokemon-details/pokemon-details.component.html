@@ -21,6 +21,8 @@
       >
         <app-sprite-for-each-pokemon
           [pokemonId]="pokemonId"
+          [gender] = "selectedGender"
+          [shiny] = "isShiny"
         ></app-sprite-for-each-pokemon>
       </div>
 
@@ -33,27 +35,36 @@
         <div
           class="w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-[#5889c3] flex items-center justify-center font-bold text-black border-black border-4 shadow-[0_0_8px_2px_rgba(255,255,255,0.4)] cursor-pointer"
         >
+        <button (click)="showMale()">
           <img
             src="https://res.cloudinary.com/dzfqdntdw/image/upload/v1770234327/genero-masculino_qk6ya0.png"
             class="w-8 h-8"
             alt=""
+            
           />
+          </button>
         </div>
         <div
           class="w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-[#f64f4b] flex items-center justify-center font-bold text-black border-black border-4 shadow-[0_0_8px_2px_rgba(255,255,255,0.4)] cursor-pointer"
         >
-          <img
-            src="https://res.cloudinary.com/dzfqdntdw/image/upload/v1770234326/signo-de-las-mujeres_hmas9s.png"
-            class="w-8 h-8"
-            alt=""
-          />
+          <button (click)="showFemale()">
+            <img
+              src="https://res.cloudinary.com/dzfqdntdw/image/upload/v1770234326/signo-de-las-mujeres_hmas9s.png"
+              class="w-8 h-8"
+              alt=""
+              
+            />
+          </button>
         </div>
-        <img
-          src="https://res.cloudinary.com/dzfqdntdw/image/upload/v1770234616/Shine_rmz6tl.png"
-          draggable="false"
-          class="w-14 h-14 cursor-pointer"
-          alt=""
-        />
+        <button (click)="toggleShiny()">
+          <img
+            [src]="isShiny ? 'https://res.cloudinary.com/dzfqdntdw/image/upload/v1771177585/Shine_1_j6yoln.png' : 'https://res.cloudinary.com/dzfqdntdw/image/upload/v1770234616/Shine_rmz6tl.png' "
+            draggable="false"
+            class="w-14 h-14 cursor-pointer"
+            alt=""
+            
+          />
+        </button>
       </div>
 
       <div class="flex flex-row justify-center items-center w-full space-x-12">
