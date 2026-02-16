@@ -1,3 +1,30 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "pokemonFont";
+  src: url("/assets/fonts/pokemonSolid.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+@layer utilities {
+  .hover-stroke-yellow {
+    color: black; 
+    text-shadow: none;  
+    transition: text-shadow 0.3s ease; 
+  }
+
+  .hover-stroke-yellow:hover {
+    text-shadow: 
+      2px 0 #FFCB05,
+      -2px 0 #FFCB05,
+      0 2px #FFCB05,
+      0 -2px #FFCB05,
+      1px 1px #FFCB05,
+      -1px 1px #FFCB05,
+      1px -1px #FFCB05,
+      -1px -1px #FFCB05;
+  }
+}
