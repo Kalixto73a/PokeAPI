@@ -1,5 +1,5 @@
 <div class=" flex flex-wrap text-white justify-center items-center">
-    <h1 class="flex justify-center items-center text-[6rem] uppercase"> Regions</h1>
+    <h1 class="flex justify-center items-center text-[4rem] uppercase pt-2 pb-8 font-pokemonFont"> Regions</h1>
     <div class="flex flex-wrap justify-center items-center p-6 gap-24">
         <div *ngFor='let region of regions' (click)="selectRegion(region)" class="flex flex-col justify-center items-center w-[100px] lg:w-[320px] lg:h-[340px] rounded-xl overflow-hidden p-2 pb-4 transform transition-transform duration-200 hover:scale-105 bg-cover bg-center bg-no-repeat border-2" [ngStyle]="{'background-image': 'url(' + getRegionImage(getRegionId(region)) + ')'}">
             <div class="absolute inset-0 bg-black/60"></div>
