@@ -1,3 +1,7 @@
+body.swal2-shown {
+  padding-right: 0 !important;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
