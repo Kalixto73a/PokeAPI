@@ -14,21 +14,25 @@ body.swal2-shown {
     font-display: swap;
 }
 @layer utilities {
-  .hover-stroke-yellow {
+    .hover-stroke-yellow {
     color: black; 
     text-shadow: none;  
     transition: text-shadow 0.3s ease; 
-  }
+    }
 
-  .hover-stroke-yellow:hover {
+    .text-shadow {
+    text-shadow: 3px 3px 5px rgba(0,0,0,0.5);
+    }
+
+    .hover-stroke-yellow:hover {
     text-shadow: 
-      2px 0 #FFCB05,
-      -2px 0 #FFCB05,
-      0 2px #FFCB05,
-      0 -2px #FFCB05,
-      1px 1px #FFCB05,
-      -1px 1px #FFCB05,
-      1px -1px #FFCB05,
-      -1px -1px #FFCB05;
-  }
+        2px 0 #FFCB05,
+        -2px 0 #FFCB05,
+        0 2px #FFCB05,
+        0 -2px #FFCB05,
+        1px 1px #FFCB05,
+        -1px 1px #FFCB05,
+        1px -1px #FFCB05,
+        -1px -1px #FFCB05;
+    }
 }
