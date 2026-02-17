@@ -9,7 +9,7 @@
             </path>
             </svg>
     </div>
-    <div *ngIf= 'filteredPokemons .length === 0' class="mt-4 px-2 py-4 bg-[#FFFF00] rounded-lg"> That pokemon is not from this region or does not exist</div>
+    <div *ngIf= 'filteredPokemons .length === 0' class="mt-4 px-2 py-4 bg-[#FFFF00] rounded-lg"> That pokemon is not in the pokedex from this region or does not exist</div>
 </div>
 <div class="flex flex-wrap justify-center pt-6 pb-6 gap-6 px-1">
     <div class="cursor-pointer flex flex-col items-center w-[100px] lg:w-[320px] lg:h-[400px] rounded-xl p-2 pb-4 transform transition-transform duration-200 hover:scale-105 font-bold" (click)="goToPokemonDetails(pokemon.id)"
