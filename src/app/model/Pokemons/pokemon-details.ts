@@ -1,6 +1,6 @@
 export class PokemonDetails{
 
-    public id : string
+    public id : number
     public name : string
     public sprites  :  DiferentSprites
     public types: PokemonTypes[]
@@ -21,7 +21,31 @@ export class DiferentSprites{
     public back_shiny: string | null
     public back_shiny_female: string | null
 
+    public other: OtherSprites
+
 }
+
+export interface VariantData {
+
+  artwork: OfficialArtworkDetails
+  types: PokemonTypes[]
+  hasShiny: boolean
+  
+}
+
+export class OtherSprites{
+
+    public 'official-artwork': OfficialArtworkDetails
+
+}
+
+export class OfficialArtworkDetails{
+
+    public front_default : string 
+    public front_shiny: string
+
+}
+
 
 export class PokemonTypes{
 
