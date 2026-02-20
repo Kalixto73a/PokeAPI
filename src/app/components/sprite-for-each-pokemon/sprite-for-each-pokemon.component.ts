@@ -1,91 +1,170 @@
-import { Component, Output, EventEmitter, OnChanges, SimpleChanges, Input } from '@angular/core';
+import { Component, Output, EventEmitter, OnChanges, OnInit, SimpleChanges, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { forkJoin } from 'rxjs';
 import { DetailsForEachPokemonApicallService } from '../../services/pokemon-details/pokemon-details-apicall.service';
-import { PokemonDetails, DiferentSprites } from '../../model/Pokemons/pokemon-details';
-import Swal from 'sweetalert2';
+import { PokemonSpeciesApicallService } from '../../services/pokemon-species-apicall/pokemon-species-apicall.service';
+import { OfficialArtworkDetails, VariantData} from '../../model/Pokemons/pokemon-details';
 
 @Component({
   selector: 'app-sprite-for-each-pokemon',
   standalone: true,
-  imports: [CommonModule],
-  providers: [DetailsForEachPokemonApicallService],
+  imports: [ CommonModule, HttpClientModule ],
+  providers: [ DetailsForEachPokemonApicallService, PokemonSpeciesApicallService ],
   templateUrl: './sprite-for-each-pokemon.component.html',
   styleUrls: ['./sprite-for-each-pokemon.component.css']
 })
-export class SpriteForEachPokemonComponent implements OnChanges {
+export class SpriteForEachPokemonComponent implements OnChanges, OnInit {
 
   @Input() pokemonId!: number
-  @Input() spriteIndex?: number
-  @Input() gender: 'male' | 'female' = 'male'
-  @Input() shiny: boolean = false
+  @Input() shiny: boolean
+  @Input() selectedVariantIndex: number
 
   @Output() load: EventEmitter<void> = new EventEmitter<void>()
+  @Output() variantTypesChanged: EventEmitter<string[]> = new EventEmitter()
+  @Output() variantsLoaded: EventEmitter<{count: number, names: string[], hasShiny?: boolean[]}> = new EventEmitter()
 
-  public frontSprite?: string
-  public backSprite?: string
-  public showFront: boolean = true
+  public currentArtwork?: OfficialArtworkDetails
+  public allVariantsData: VariantData[]
+  public allVariantNames: string[]
 
-  constructor(private spriteService: DetailsForEachPokemonApicallService) {}
+  /**
+   * Constructor
+   * 
+   * @param {DetailsForEachPokemonApicallService} spriteService
+   * @param {PokemonSpeciesApicallService} speciesService
+   * 
+   */
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.loadSprites();
+  constructor(
+    private spriteService: DetailsForEachPokemonApicallService,
+    private speciesService: PokemonSpeciesApicallService
+  ) {}
+
+  public ngOnInit(): void {
+
+    this.initializeValues()
+
+  }
+
+  private initializeValues(): void {
+    
+    this.shiny = false
+    this.selectedVariantIndex = 0
+    this.allVariantsData = []
+    this.allVariantNames = []
+
+  }
+
+  public ngOnChanges(changes: SimpleChanges): void {
+
+    if (changes['pokemonId']) {
+    this.loadSprites()
+    }
+
+    if (changes['selectedVariantIndex'] && this.allVariantsData.length) {
+    this.updateCurrentArtwork()
+    const current = this.allVariantsData[this.selectedVariantIndex]
+    if (current) {
+      this.variantTypesChanged.emit(current.types.map(t => t.type.name))
+        }
+    }
+
   }
 
   private loadSprites(): void {
-
-  this.spriteService.getDetailsOfPokemon(this.pokemonId)
+    this.spriteService.getDetailsOfPokemon(this.pokemonId)
     .subscribe({
-      next: (response: PokemonDetails) => {
-        const sprites: DiferentSprites = response.sprites
-
-        if (this.spriteIndex !== undefined) {
-            this.frontSprite = sprites.front_default ?? undefined
-            this.backSprite = undefined
-            this.showFront = true
-            return
-          this.showFront = true
-          return
-        }
-
-        let frontKey: keyof DiferentSprites
-        let backKey: keyof DiferentSprites
-
-        if (this.gender === 'female') {
-          frontKey = this.shiny ? 'front_shiny_female' : 'front_female'
-          backKey  = this.shiny ? 'back_shiny_female' : 'back_female'
-
-          if (!sprites[frontKey]) frontKey = this.shiny ? 'front_shiny' : 'front_default'
-          if (!sprites[backKey]) backKey = this.shiny ? 'back_shiny' : 'back_default'
-        } else {
-          frontKey = this.shiny ? 'front_shiny' : 'front_default'
-          backKey  = this.shiny ? 'back_shiny' : 'back_default'
-        }
-
-        this.frontSprite = sprites[frontKey] ?? sprites.front_default ?? undefined
-        this.backSprite = sprites[backKey] ?? sprites.back_default ?? undefined
-        this.showFront = true
-
-      },
-      error: () => Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        html: 'There was an error loading the Pokémon sprite.<br><br>Please reload the page and try again.',
-        theme: 'dark',
-        confirmButtonText: 'Reload Page',
-        confirmButtonColor: '#FF0000',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.reload()
-        }
-      })
+      next: base => {
+        this.allVariantsData = [{
+          artwork: base.sprites.other['official-artwork'],
+          types: base.types,
+          hasShiny: !!base.sprites.front_shiny
+        }]
+        this.updateCurrentArtwork()
+        this.speciesService.getPokemonSpeciesData(this.pokemonId)
+          .subscribe(species => {
+            const variantIds = species.varieties
+              .filter(v => !v.is_default)
+              .map(v => this.extractIdFromUrl(v.pokemon.url))
+            this.allVariantNames = species.varieties.map(v => v.pokemon.name)
+            if (variantIds.length === 0) {
+              this.emitVariantsLoaded()
+              return
+            }
+            const requests = variantIds.map(id => 
+              this.spriteService.getDetailsOfPokemon(id)
+            )
+            forkJoin(requests).subscribe(variants => {
+              variants
+                .filter(v => v !== null)
+                .forEach(v => {
+                  this.allVariantsData.push({
+                    artwork: v!.sprites.other['official-artwork'],
+                    types: v!.types,
+                    hasShiny: !!v!.sprites.front_shiny
+                  })
+                })
+              this.updateCurrentArtwork()
+              this.emitVariantsLoaded()
+            })
+          })
+      }
     })
-}
+  }
+  public updateVariantTypes(): void {
+    const current = this.allVariantsData[this.selectedVariantIndex]
+    if (current) {
+      this.variantTypesChanged.emit(current.types.map(t => t.type.name))
+    }
+  }
 
-  public toggleSprite(): void {
-    this.showFront = !this.showFront
+  private extractIdFromUrl(url: string): number {
+
+    const parts = url.split('/').filter(p => p)
+    return +parts[parts.length - 1]
+
   }
 
   public onSpriteLoaded(): void {
+
     this.load.emit()
+
   }
+
+  private updateCurrentArtwork(): void {
+
+    this.emitCurrentVariantTypes()
+
+  }
+
+  public get frontArtwork(): string | undefined {
+
+    const current = this.allVariantsData[this.selectedVariantIndex]
+    if (!current) return undefined
+    return this.shiny ? current.artwork.front_shiny : current.artwork.front_default
+
+  }
+
+  private emitVariantsLoaded(): void {
+
+    this.variantsLoaded.emit({
+      count: this.allVariantsData.length,
+      names: this.allVariantNames,
+      hasShiny: this.allVariantsData.map(v => v.hasShiny)
+    })
+
+    this.emitCurrentVariantTypes()
+
+  }
+
+  public emitCurrentVariantTypes(): void {
+
+    const current = this.allVariantsData[this.selectedVariantIndex]
+    if (current) {
+      this.variantTypesChanged.emit(current.types.map(t => t.type.name))
+    }
+
+  }
+
 }
