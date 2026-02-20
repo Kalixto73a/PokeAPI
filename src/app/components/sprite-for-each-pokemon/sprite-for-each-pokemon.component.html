@@ -1,18 +1,1 @@
-<img
-  *ngIf="frontSprite && !backSprite"
-  [src]="frontSprite"
-  (load)="onSpriteLoaded()"
-  class="w-full lg:w-full lg:h-[270px] object-contain"
-  draggable="false"
-  alt="Pokémon Sprite"
-/>
-
-<img
-  *ngIf="frontSprite && backSprite"
-  [src]="showFront ? frontSprite : backSprite"
-  (click)="toggleSprite()"
-  (load)="onSpriteLoaded()"
-  class="cursor-pointer w-full lg:w-full lg:h-[270px] object-contain"
-  draggable="false"
-  alt="Pokémon Sprite"
-/>
+<img [src]="frontArtwork" (load)="load.emit()" class="w-full h-[250px]" draggable="false" alt="Pokémon Sprite"/>
