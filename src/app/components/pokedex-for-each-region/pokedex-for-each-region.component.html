@@ -1,22 +1,25 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div class="flex flex-col pt-4 justify-center items-center">
-    <div class="flex px-4 py-3 rounded-md border-2 border-yellow-500 overflow-hidden min-w-[400px]">
-            <input type="text" placeholder="Search Pokemon" (input)="onSearchChange($event)"
-            class="w-full outline-none bg-transparent text-gray-500 text-sm"/>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192.904 192.904" width="16px" class="fill-gray-600">
-            <path
-                d="m190.707 180.101-47.078-47.077c11.702-14.072 18.752-32.142 18.752-51.831C162.381 36.423 125.959 0 81.191 0 36.422 0 0 36.423 0 81.193c0 44.767 36.422 81.187 81.191 81.187 19.688 0 37.759-7.049 51.831-18.751l47.079 47.078a7.474 7.474 0 0 0 5.303 2.197 7.498 7.498 0 0 0 5.303-12.803zM15 81.193C15 44.694 44.693 15 81.191 15c36.497 0 66.189 29.694 66.189 66.193 0 36.496-29.692 66.187-66.189 66.187C44.693 147.38 15 117.689 15 81.193z">
-            </path>
-            </svg>
+  <div class="flex px-4 py-3 rounded-md border-2 border-[#FFCB05] overflow-hidden min-w-[400px] relative  z-10 bg-white/40">
+    <input type="text" placeholder="Search Pokemon" [(ngModel)]="searchText" (input)="onSearchChange($event)" class="w-full outline-none text-black text-sm bg-transparent pr-8 placeholder-black font-bold"/>
+    <svg *ngIf="!searchText" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192.904 192.904" width="16px" class="fill-black absolute right-2 top-1/2 -translate-y-1/2">
+      <path d="m190.707 180.101-47.078-47.077c11.702-14.072 18.752-32.142 18.752-51.831C162.381 36.423 125.959 0 81.191 0 36.422 0 0 36.423 0 81.193c0 44.767 36.422 81.187 81.191 81.187 19.688 0 37.759-7.049 51.831-18.751l47.079 47.078a7.474 7.474 0 0 0 5.303 2.197 7.498 7.498 0 0 0 5.303-12.803zM15 81.193C15 44.694 44.693 15 81.191 15c36.497 0 66.189 29.694 66.189 66.193 0 36.496-29.692 66.187-66.189 66.187C44.693 147.38 15 117.689 15 81.193z"></path>
+    </svg>
+    <svg *ngIf="searchText" (click)="clearSearch()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16px" class="fill-black absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer">
+    <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4z"/>
+    </svg>
+  </div>
+  <div *ngIf="filteredPokemons.length === 0 && !loading" class="absolute inset-0 flex justify-center items-center text-center px-4 z-0">
+    <div class="bg-[#FFFF00] rounded-lg px-6 py-4 font-bold shadow-lg">
+      That Pokémon is not in the pokédex from this region or does not exist
     </div>
-    <div *ngIf= 'filteredPokemons .length === 0' class="mt-4 px-2 py-4 bg-[#FFFF00] rounded-lg"> That pokemon is not in the pokedex from this region or does not exist</div>
+  </div>
 </div>
 <div class="flex flex-wrap justify-center pt-6 pb-6 gap-6 px-1">
-    <div class="cursor-pointer flex flex-col items-center w-[100px] lg:w-[320px] lg:h-[400px] rounded-xl p-2 pb-4 transform transition-transform duration-200 hover:scale-105 font-bold" (click)="goToPokemonDetails(pokemon.id)"
-    *ngFor="let pokemon of filteredPokemons" [ngStyle]="{ 'background': pokemon.cardBackground || '#fff' }">
-        <app-sprite-for-each-pokemon [pokemonId]="pokemon.id" [spriteIndex]="0" class="items-center" (load)="onSpriteLoaded(pokemon.id)"></app-sprite-for-each-pokemon>
-        <h1 class="uppercase gap-2 text-[0.8rem] lg:text-[1.5rem]">{{ pokemon.name }}</h1>
+    <div class="cursor-pointer flex flex-col items-center justify-center w-[320px] h-[400px] rounded-xl p-2 pb-4 transform transition-transform duration-200 hover:scale-105 font-bold bg-white/30 border-2 border-[#FFCB05]" (click)="goToPokemonDetails(pokemon.id)" *ngFor="let pokemon of filteredPokemons">
+        <app-sprite-for-each-pokemon [pokemonId]="pokemon.id" class="items-center" (load)="onSpriteLoaded(pokemon.id)"></app-sprite-for-each-pokemon>
+        <h1 class="uppercase gap-2 text-[1.5rem]">{{ pokemon.name }}</h1>
         <app-pokemon-number [pokemonId]="pokemon.id"></app-pokemon-number>
-        <app-pokemon-types [pokemonId]="pokemon.id" (typesLoaded)="onTypesLoaded($event)" class="flex justify-center items-center"></app-pokemon-types>
+        <app-pokemon-types [pokemonId]="pokemon.id"></app-pokemon-types>
     </div>
 </div>
