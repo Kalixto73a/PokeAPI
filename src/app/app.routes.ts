@@ -6,17 +6,17 @@ import { PokemonDetailsComponent } from './components/pokemon-details/pokemon-de
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'regionslist',
+    redirectTo: 'Regions',
     pathMatch: 'full'
   },
   {
-    path: 'regionslist',
+    path: 'Regions',
     loadComponent: () =>
       import('./components/regions-list/regions-list.component')
         .then(c => c.RegionsListComponent)
   },
   {
-    path: 'region/:id',
+    path: 'Pokedex/:regionName',
     children: [
       {
         path: '',
