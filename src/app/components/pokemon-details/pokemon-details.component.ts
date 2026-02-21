@@ -1,19 +1,19 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PokemonDetails, PokemonTypes } from '../../model/Pokemons/pokemon-details';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { DetailsForEachPokemonApicallService } from '../../services/pokemon-details/pokemon-details-apicall.service';
+import { PokemonSpeciesApicallService } from '../../services/pokemon-species-apicall/pokemon-species-apicall.service';
 import { PokemonNumberComponent } from '../pokemon-number/pokemon-number.component';
 import { PokemonTypesComponent } from '../pokemon-types/pokemon-types.component';
-import { DetailsForEachPokemonApicallService } from '../../services/pokemon-details/pokemon-details-apicall.service';
 import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component';
-import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
 import { PokemonEvolutionChainComponent } from '../pokemon-evolution-chain/pokemon-evolution-chain.component';
-import Swal from 'sweetalert2';
 import { PokemonTypesColors } from '../../core/config/types-colors';
 import { RegionNames } from '../../core/config/regions-names';
 import { RegionImages } from '../../core/config/regions-list-images';
-import { PokemonSpeciesApicallService } from '../../services/pokemon-species-apicall/pokemon-species-apicall.service';
 import { GenerationToRegionId } from '../../core/config/generation-to-region';
+import { PokemonDetails, PokemonTypes } from '../../model/Pokemons/pokemon-details';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pokemon-details',
@@ -30,6 +30,12 @@ export class PokemonDetailsComponent implements OnInit{
 
   private readonly hisuiPokemonIds = [899, 900, 901, 902, 903, 904]
   
+  public selectedVariantIndex: number
+  public totalVariants: number
+  public variantNames: string[]
+  public variantHasShiny: boolean[]
+  public openDropdown: boolean
+  public isShiny: boolean
   public loading: boolean
   public pokemon: PokemonDetails
   public regionId: number | null 
@@ -39,7 +45,7 @@ export class PokemonDetailsComponent implements OnInit{
   public statsBackground: string
   public statsWidths: number[]
   public selectedGender: 'male' | 'female'
-  public isShiny: boolean
+  public currentTypes: PokemonTypes[]
 
   /**
    * 
@@ -57,7 +63,13 @@ export class PokemonDetailsComponent implements OnInit{
     private route: ActivatedRoute,
     private router: Router, 
 
-  ) {}
+  ) {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+    })
+  }
 
   public ngOnInit(): void{
 
@@ -67,6 +79,11 @@ export class PokemonDetailsComponent implements OnInit{
 
   private initializeValues(): void{
 
+    this.selectedVariantIndex = 0
+    this.totalVariants = 0
+    this.variantNames  = []
+    this.variantHasShiny = []
+    this.openDropdown = false
     this.loading = false
     this.pokemon = {} as PokemonDetails
     this.regionId = null
@@ -77,19 +94,20 @@ export class PokemonDetailsComponent implements OnInit{
     this.statsWidths = []
     this.selectedGender = 'male'
     this.isShiny = false
+    this.currentTypes = []
     this.getIdByUrl()
 
-    
   } 
   
   private getIdByUrl(): void {
-    this.loading = true
     this.route.paramMap.subscribe(params => {
-      this.regionId = Number(params.get('id'))
-      this.pokemonId = Number(params.get('pokemonId'))
-      if (this.regionId && this.pokemonId) {
-        this.loadPokemonDetails()
-        this.loading= false
+      const newPokemonId = Number(params.get('pokemonId'))
+      this.resetPokemonState()
+      this.pokemonId = newPokemonId
+      const regionName = this.route.parent?.snapshot.paramMap.get('regionName')
+      if (regionName && this.pokemonId) {
+        this.regionId = this.getRegionIdFromName(regionName);
+        this.loadPokemonDetails();
       } else {
         Swal.fire({
           icon: 'error',
@@ -107,6 +125,11 @@ export class PokemonDetailsComponent implements OnInit{
     })
   }
   
+  private getRegionIdFromName(name: string): number | null {
+    const entry = Object.entries(RegionNames).find(([_, value]) => value === name)
+    return entry ? Number(entry[0]) : null
+  }
+
   private loadPokemonDetails(): void{
     this.loading = true
     if (this.pokemonId) {
@@ -114,7 +137,7 @@ export class PokemonDetailsComponent implements OnInit{
         .subscribe({next: details => {
           this.pokemon = details
           if (details?.species?.url) {
-            this.pokemonSpeciesService.getPokemonSpeciesData(details.species.url)
+            this.pokemonSpeciesService.getPokemonSpeciesData(details.id)
               .subscribe(speciesData => {
                 const generationName = speciesData.generation?.name
                   if (this.hisuiPokemonIds.includes(this.pokemonId)) {
@@ -147,14 +170,19 @@ export class PokemonDetailsComponent implements OnInit{
   }
 
   public getWeightInKg(weight: number): string {
-  return (weight / 10).toFixed(1)
+    return (weight / 10).toFixed(1)
   }
   
   public updateStatsBackground() {
-    if(this.pokemon?.types){
+    if (this.currentTypes && this.currentTypes.length > 0) {
+      this.statsBackground = this.calculateCardBackground(this.currentTypes)
+    } else if (this.pokemon?.types && this.pokemon.types.length > 0) {
       this.statsBackground = this.calculateCardBackground(this.pokemon.types)
+    } else {
+      this.statsBackground = '#fff'
     }
   }
+
   public calculateCardBackground(types: PokemonTypes[]): string {
     if (!types || types.length === 0) return '#fff'
     const colors = types.map(t => PokemonTypesColors[t.type.name] ?? '#777')
@@ -164,29 +192,57 @@ export class PokemonDetailsComponent implements OnInit{
 
   private animateStats(): void {
     if (!this.pokemon?.stats) return
-
     this.statsWidths = this.pokemon.stats.map(() => 0)
-
     setTimeout(() => {
       this.statsWidths = this.pokemon.stats.map(s => (s.base_stat / 255) * 100)
     }, 50)
   }
 
   public goBack(): void {
-    const id = this.regionId
-    this.router.navigate(['region', id])
-  }
-  
-  public showMale(): void{
-    this.selectedGender = 'male'
-  }
-
-  public showFemale(): void{
-    this.selectedGender = 'female'
+    if (!this.regionId) return;
+    const regionName = RegionNames[this.regionId]
+    this.router.navigate(['Pokedex/',regionName])
   }
   
   public toggleShiny(): void{
     this.isShiny = !this.isShiny
+  }
+
+  public onVariantsLoaded(event: { count: number; names: string[], hasShiny?: boolean[] }): void {
+    this.totalVariants = event.count
+    this.variantNames = event.names
+    if (event.hasShiny) {
+    this.variantHasShiny = event.hasShiny
+    } else {
+      this.variantHasShiny = Array(this.totalVariants).fill(false)
+    }
+  }
+
+  public onVariantSelect(idx: number): void {
+    this.selectedVariantIndex = idx
+  }
+
+  public onVariantTypesChanged(typeNames: string[]): void {
+    this.currentTypes = typeNames.map((name, index) => ({
+      slot: index + 1,
+      type: { name, url: '' }
+    } as PokemonTypes))
+    this.updateStatsBackground()
+  }
+  public get currentVariantHasShiny(): boolean {
+    return this.variantHasShiny[this.selectedVariantIndex] ?? false
+  }
+
+  private resetPokemonState(): void {
+
+    this.selectedVariantIndex = 0;
+    this.totalVariants = 0;
+    this.variantNames = [];
+    this.variantHasShiny = [];
+    this.isShiny = false;
+    this.currentTypes = [];
+    this.loading = true;
+
   }
 
 }
