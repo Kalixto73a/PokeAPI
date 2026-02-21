@@ -1,34 +1,34 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { EvolutionChain, EvolutionChainOfPokemon, EvolutionDetails } from '../../model/Pokemons/pokemon-evolution-chain';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { PokemonSpeciesApicallService } from '../../services/pokemon-species-apicall/pokemon-species-apicall.service';
 import { EvolutionChainApicallService } from '../../services/evolution-chain-apicall/evolution-chain-apicall.service';
-import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component';
-import { CommonModule } from '@angular/common';
 import { DetailsForEachPokemonApicallService } from '../../services/pokemon-details/pokemon-details-apicall.service';
+import { SpriteForEachPokemonComponent } from '../sprite-for-each-pokemon/sprite-for-each-pokemon.component';
+import { EvolutionChain, EvolutionChainOfPokemon, EvolutionDetails } from '../../model/Pokemons/pokemon-evolution-chain';
 import { PokemonTypes } from '../../model/Pokemons/pokemon-details';
 import { PokemonTypesColors } from '../../core/config/types-colors';
-import { forkJoin } from 'rxjs';
-import Swal from 'sweetalert2';
 import { PokemonRegionRanges } from '../../core/config/pokemon-regions-range';
 import { PhysicalStatsTexts } from '../../core/config/physical-stats-texts';
 import { GenderTypes } from '../../core/config/gender-types';
+import { RegionNames } from '../../core/config/regions-names';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pokemon-evolution-chain',
   standalone: true,
   imports: [CommonModule, SpriteForEachPokemonComponent],
-  providers: [
-    PokemonSpeciesApicallService,
-    EvolutionChainApicallService,
-    DetailsForEachPokemonApicallService
-  ],
+  providers: [ PokemonSpeciesApicallService, EvolutionChainApicallService, DetailsForEachPokemonApicallService],
   templateUrl: './pokemon-evolution-chain.component.html',
   styleUrl: './pokemon-evolution-chain.component.css'
 })
+
 export class PokemonEvolutionChainComponent implements OnInit {
 
   @Input() speciesUrl!: string
-
+  @Input() pokemonId: number
+  
   public loading: boolean
   public evolutionChain: EvolutionChain | null
   public pokemonTypesMap: Record<number, PokemonTypes[]>
@@ -44,27 +44,33 @@ export class PokemonEvolutionChainComponent implements OnInit {
    */
 
   constructor(
+
     private speciesService: PokemonSpeciesApicallService,
     private evolutionChainService: EvolutionChainApicallService,
-    private detailsForEachPokemonService: DetailsForEachPokemonApicallService
+    private detailsForEachPokemonService: DetailsForEachPokemonApicallService,
+    private router: Router
+
   ) {}
 
   public ngOnInit(): void {
+
     this.initializeValues()
+
   }
 
   private initializeValues(): void {
+
     this.loading = false
     this.evolutionChain = null
     this.pokemonTypesMap = {}
     this.getEvolutionChainUrlFromSpecies()
+
   }
 
   private getEvolutionChainUrlFromSpecies(): void {
     if (!this.speciesUrl) return
-
     this.loading = true
-    this.speciesService.getPokemonSpeciesData(this.speciesUrl).subscribe({
+    this.speciesService.getPokemonSpeciesData(this.pokemonId).subscribe({
       next: speciesData => {
         const evolutionUrl = speciesData.evolution_chain?.url
         if (evolutionUrl) {
@@ -120,9 +126,16 @@ export class PokemonEvolutionChainComponent implements OnInit {
     return colors.length === 1 ? colors[0] : `linear-gradient(135deg, ${colors.join(', ')})`
   }
 
-  public changePokemon(pokemonId: number) {
+  public changePokemon(pokemonId: number): void {
     const regionId = this.getRegionByPokemonId(pokemonId)
-    window.location.assign(`/PokeAPI/region/${regionId}/pokemon/${pokemonId}`)
+    const regionName = RegionNames[regionId]
+
+    this.router.navigate([
+      'Pokedex',
+      regionName,
+      'pokemon',
+      pokemonId
+    ])
   }
 
   private getRegionByPokemonId(pokemonId: number): number {
@@ -181,7 +194,7 @@ export class PokemonEvolutionChainComponent implements OnInit {
         if (detail.min_move_count) return `Using an strong-style move ${detail.min_move_count} times`
         return 'Using an strong-style move specific times'
       case 'spin':
-        return 'spinning with a sweet equiped on the pokemon'
+        return 'Spinning with a sweet equiped on the pokemon'
       case 'take-damage':
         return `Receive damage until having ${detail.min_damage_taken} hp`
       case 'recoil-damage':
@@ -222,7 +235,6 @@ export class PokemonEvolutionChainComponent implements OnInit {
       .replace(/\b\w/g, char => char.toUpperCase())
   }
 
-  
   private getGenderTypeText(value: number | null | undefined): string {
     if (value === null || value === undefined) return ''
     return GenderTypes[value] ?? 'Unknown gender'
