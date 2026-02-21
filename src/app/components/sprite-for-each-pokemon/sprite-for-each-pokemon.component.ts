@@ -59,17 +59,18 @@ export class SpriteForEachPokemonComponent implements OnChanges, OnInit {
   public ngOnChanges(changes: SimpleChanges): void {
 
     if (changes['pokemonId']) {
-    this.loadSprites()
+      this.allVariantsData = []
+      this.allVariantNames = []
+      this.loadSprites()
     }
 
     if (changes['selectedVariantIndex'] && this.allVariantsData.length) {
-    this.updateCurrentArtwork()
-    const current = this.allVariantsData[this.selectedVariantIndex]
+      this.updateCurrentArtwork()
+      const current = this.allVariantsData[this.selectedVariantIndex]
     if (current) {
       this.variantTypesChanged.emit(current.types.map(t => t.type.name))
-        }
+      }
     }
-
   }
 
   private loadSprites(): void {
