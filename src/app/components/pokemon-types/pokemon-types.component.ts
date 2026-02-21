@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common'
-import { PokemonDetails, PokemonTypes, NamedAPIResource } from '../../model/Pokemons/pokemon-details';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DetailsForEachPokemonApicallService } from '../../services/pokemon-details/pokemon-details-apicall.service';
+import { PokemonDetails, PokemonTypes, NamedAPIResource } from '../../model/Pokemons/pokemon-details';
 import { PokemonTypesColors } from '../../core/config/types-colors';
 
 @Component({
@@ -14,12 +14,13 @@ import { PokemonTypesColors } from '../../core/config/types-colors';
 })
 
 
-export class PokemonTypesComponent implements OnInit {
+export class PokemonTypesComponent {
+  
+  @Input() types: PokemonTypes[]
+  @Input() pokemonId: number
 
-  @Input() pokemonId : number
   @Output() typesLoaded = new EventEmitter<{ pokemonId: number, types: PokemonTypes[] }>()
   
-  public types: PokemonTypes[] 
   /**
    * 
    * Constructor
@@ -31,6 +32,7 @@ export class PokemonTypesComponent implements OnInit {
 
   public ngOnInit(): void{
 
+    this.types = []
     this.initializeValues()
 
   }
@@ -38,12 +40,13 @@ export class PokemonTypesComponent implements OnInit {
   private initializeValues(): void{
 
     this.types = []
+    if (!this.types?.length && this.pokemonId) {
     this.loadTypesOfThePokemon()
+   }
 
   }
 
   private loadTypesOfThePokemon(): void{
-
     this.typesService.getDetailsOfPokemon(this.pokemonId)
     .subscribe({
       next:(response: PokemonDetails) => {
@@ -61,7 +64,7 @@ export class PokemonTypesComponent implements OnInit {
   }
 
   public getTypeColor(typeName: string): string {
-    return PokemonTypesColors[typeName];
+    return PokemonTypesColors[typeName] ?? '#777'
   }
 
 }
