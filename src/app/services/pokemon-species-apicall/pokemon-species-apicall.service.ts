@@ -7,12 +7,13 @@ import { PokemonSpicies } from '../../model/Pokemons/pokemon-species';
 @Injectable({
   providedIn: 'root'
 })
+
 export class PokemonSpeciesApicallService {
 
   constructor( private http: HttpClient) { }
 
-  public getPokemonSpeciesData(url: string): Observable<PokemonSpicies> {
-      return this.http.get<PokemonSpicies>(`${url}`)
+  public getPokemonSpeciesData(id: number): Observable<PokemonSpicies> {
+      return this.http.get<PokemonSpicies>(`${environment.apiUrl}pokemon-species/${id}/`)
     }
 
 }
