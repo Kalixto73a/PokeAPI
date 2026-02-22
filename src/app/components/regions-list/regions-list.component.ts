@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
@@ -6,101 +6,85 @@ import { RegionsAPICallService } from '../../services/regions-apicall/regions-ap
 import { NamedAPIResource } from '../../model/Regions/regions';
 import { RegionImages } from '../../core/config/regions-list-images';
 import Swal from 'sweetalert2';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-regions-list',
   standalone: true,
-  imports: [ CommonModule, HttpClientModule, ],
-  providers:[ RegionsAPICallService, ],
+  imports: [CommonModule, HttpClientModule],
+  providers: [RegionsAPICallService],
   templateUrl: './regions-list.component.html',
-  styleUrl: './regions-list.component.css'
+  styleUrls: ['./regions-list.component.css']
 })
 
-export class RegionsListComponent  implements OnInit{
+export class RegionsListComponent implements OnInit, OnDestroy {
 
-  public regions: NamedAPIResource[]
+  public regions: (NamedAPIResource & { id: number })[]
   public loading: boolean
-  public regionImages: Record<number, string>
-  public selectedRegionId: number | null 
+  public regionImages: Record<number, string> = RegionImages
 
-  /**
-   * Constructor
-   * 
-   * @param {RegionsAPICallService} regionsListService
-   * 
-   */
-  constructor (
+  private routerSubscription!: Subscription
 
+  constructor(
     private regionsListService: RegionsAPICallService,
     private router: Router
-
   ) {
-
-    this.router.events.subscribe(event => {
+    this.routerSubscription = this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     })
-
   }
 
   public ngOnInit(): void {
-
     this.initializeValues()
-
   }
 
-  private initializeValues(): void{
+  public ngOnDestroy(): void {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe()
+    }
+  }
 
-    this.regions= []
-    this.regionImages = RegionImages
-    this. loading = false
-    this.selectedRegionId = null 
+  private initializeValues(): void {
+    this.regions = []
+    this.loading = false
     this.loadRegionsList()
-
   }
 
-    private loadRegionsList(): void {
-      this.loading = true
-      this.regionsListService.getRegions()
-      .subscribe({
-        next: response => {
-          this.regions = response.results
-          this.loading = false
-        },
-        error: () => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            html: 'There was an error loading the Regions list.<br><br>Please reload the page and try again.',
-            theme: 'dark',
-            confirmButtonText: 'Retry',
-            confirmButtonColor: '#FF0000',
-          }).then((result) => {
-            if (result.isConfirmed) {
-              this.loadRegionsList()
-            }
-          })
-        }
-      })
-    }
+  private loadRegionsList(): void {
+    this.loading = true
+    this.regionsListService.getRegions().subscribe({
+      next: response => {
+        this.regions = response.results.map(r => ({
+          ...r,
+          id: Number(r.url.split('/').filter(Boolean).pop())
+        }))
+        this.loading = false
+      },
+      error: () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          html: 'There was an error loading the Regions list.<br><br>Please reload the page and try again.',
+          theme: 'dark',
+          confirmButtonText: 'Retry',
+          confirmButtonColor: '#FF0000',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.loadRegionsList()
+          }
+        })
+      }
+    })
+  }
 
-    public getRegionId(region: NamedAPIResource): number {
+  public getRegionImage(regionId: number): string {
+    return this.regionImages[regionId]
+  }
 
-      return Number(region.url.split('/').filter(Boolean).pop())
-
-    }
-
-    public getRegionImage(regionId: number): string{
-
-      return this.regionImages[regionId]
-
-    }
-    
-    public selectRegion(region: NamedAPIResource): void {
-
-      this.router.navigate(['Pokedex/',region.name])
-
-    }
+  public selectRegion(region: NamedAPIResource): void {
+    this.router.navigate(['Pokedex/', region.name])
+  }
 
 }
