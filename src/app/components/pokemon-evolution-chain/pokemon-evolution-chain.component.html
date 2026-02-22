@@ -1,10 +1,19 @@
-<div *ngIf="!loading && evolutionChain" class="flex justify-center items-center flex-col py-4">
+<div *ngIf="!loading && evolutionPokemonList.length" class="flex justify-center items-center flex-col py-4">
   <h3 class="flex justify-center text-lg font-semibold mb-4 text-center bg-[#FFCB05] rounded-2xl px-4 py-2">Evolution Chain</h3>
   <div class="flex flex-wrap justify-center items-start gap-4">
-    <div *ngFor="let pokemon of getEvolutionChainOfPokemon(evolutionChain.chain)" class="flex flex-col justify-center items-center p-2 rounded-xl font-bold w-[400px] h-[350px] bg-white/30 border-2 border-black cursor-pointer" [ngStyle]="{ 'background': pokemonTypesMap[(getPokemonIdFromSpeciesUrl(pokemon.species.url))] ? getCardBackgroundForPokemon(pokemonTypesMap[(getPokemonIdFromSpeciesUrl(pokemon.species.url))]) : '#fff' }" (click)="changePokemon(getPokemonIdFromSpeciesUrl(pokemon.species.url))">
-      <app-sprite-for-each-pokemon [pokemonId]="getPokemonIdFromSpeciesUrl(pokemon.species.url)" class="overflow-hidden flex items-center justify-center"></app-sprite-for-each-pokemon>
+    <div *ngFor="let pokemon of evolutionPokemonList"
+         class="flex flex-col justify-center items-center p-2 rounded-xl font-bold w-[400px] h-[350px] bg-white/30 border-2 border-black cursor-pointer"
+         [ngStyle]="{ 'background': pokemonTypesMap[pokemon.id] ? getCardBackgroundForPokemon(pokemonTypesMap[pokemon.id]) : '#fff' }"
+         (click)="changePokemon(pokemon.id)">
+      <app-sprite-for-each-pokemon [pokemonId]="pokemon.id" class="overflow-hidden flex items-center justify-center"></app-sprite-for-each-pokemon>
       <span class="mt-2 font-medium text-center uppercase mb-2">{{ pokemon.species.name }}</span>
-      <img src="https://res.cloudinary.com/dzfqdntdw/image/upload/a_hflip/v1771470190/559-5592431_pokemon-unown-exclamation-mark-unknown-pokemon-question-mark_ya27iq.webp" *ngIf="pokemon.evolution_details.length" class="w-6 h-10 mt-2 mb-4 cursor-pointer transform transition-transform duration-200 hover:scale-110 hover:brightness-125" (click)="openEvolutionPopup(pokemon.evolution_details); $event.stopPropagation()" draggable="false" alt="View Evolution Details" title="View Evolution Details">
+      <img *ngIf="pokemon.evolution_details.length"
+           src="https://res.cloudinary.com/dzfqdntdw/image/upload/a_hflip/v1771470190/559-5592431_pokemon-unown-exclamation-mark-unknown-pokemon-question-mark_ya27iq.webp"
+           class="w-6 h-10 mt-2 mb-4 cursor-pointer transform transition-transform duration-200 hover:scale-110 hover:brightness-125"
+           (click)="openEvolutionPopup(pokemon.evolution_details); $event.stopPropagation()"
+           draggable="false"
+           alt="View Evolution Details"
+           title="View Evolution Details">
     </div>
   </div>
 </div>
