@@ -10,3 +10,7 @@ export const RegionNames: Record<number, string> = {
   9: 'hisui',
   10: 'paldea',
 };
+export const RegionIds: Record<string, number> =
+  Object.fromEntries(
+    Object.entries(RegionNames).map(([id, name]) => [name, Number(id)])
+  )
