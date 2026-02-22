@@ -1,19 +1,49 @@
-<div *ngIf="!loading && evolutionPokemonList.length" class="flex justify-center items-center flex-col py-4">
-  <h3 class="flex justify-center text-lg font-semibold mb-4 text-center bg-[#FFCB05] rounded-2xl px-4 py-2">Evolution Chain</h3>
-  <div class="flex flex-wrap justify-center items-start gap-4">
+<div *ngIf="!loading && evolutionPokemonList.length"
+     class="flex flex-col items-center py-4">
+
+  <h3 class="text-lg font-bold uppercase mb-4 text-center bg-[#FFCB05] rounded-2xl px-4 py-2">
+    Evolution Chain
+  </h3>
+
+  <div class="flex flex-wrap justify-center items-stretch gap-4 w-full">
+
     <div *ngFor="let pokemon of evolutionPokemonList"
-         class="flex flex-col justify-center items-center p-2 rounded-xl font-bold w-[400px] h-[350px] bg-white/30 border-2 border-black cursor-pointer"
-         [ngStyle]="{ 'background': pokemonTypesMap[pokemon.id] ? getCardBackgroundForPokemon(pokemonTypesMap[pokemon.id]) : '#fff' }"
+         class="flex flex-col justify-center items-center
+                p-3 rounded-xl font-bold
+                w-full max-w-[280px]
+                lg:max-w-[320px]
+                xl:w-[400px] xl:h-[350px]
+                bg-white/30 border-2 border-black
+                cursor-pointer transition-transform duration-200
+                hover:scale-[1.03]"
+         [ngStyle]="{
+           background: pokemonTypesMap[pokemon.id]
+             ? getCardBackgroundForPokemon(pokemonTypesMap[pokemon.id])
+             : '#fff'
+         }"
          (click)="changePokemon(pokemon.id)">
-      <app-sprite-for-each-pokemon [pokemonId]="pokemon.id" class="overflow-hidden flex items-center justify-center"></app-sprite-for-each-pokemon>
-      <span class="mt-2 font-medium text-center uppercase mb-2">{{ pokemon.species.name }}</span>
+
+      <app-sprite-for-each-pokemon
+        [pokemonId]="pokemon.id"
+        class="overflow-hidden flex items-center justify-center
+               w-[200px] h-[200px]
+               lg:w-[220px] lg:h-[220px]">
+      </app-sprite-for-each-pokemon>
+
+      <span class="mt-2 font-medium text-center uppercase mb-2">
+        {{ pokemon.species.name }}
+      </span>
+
       <img *ngIf="pokemon.evolution_details.length"
            src="https://res.cloudinary.com/dzfqdntdw/image/upload/a_hflip/v1771470190/559-5592431_pokemon-unown-exclamation-mark-unknown-pokemon-question-mark_ya27iq.webp"
-           class="w-6 h-10 mt-2 mb-4 cursor-pointer transform transition-transform duration-200 hover:scale-110 hover:brightness-125"
+           class="w-6 h-10 mt-2 mb-4
+                  cursor-pointer transition-transform duration-200
+                  hover:scale-110 hover:brightness-125"
            (click)="openEvolutionPopup(pokemon.evolution_details); $event.stopPropagation()"
            draggable="false"
            alt="View Evolution Details"
            title="View Evolution Details">
     </div>
+
   </div>
 </div>
