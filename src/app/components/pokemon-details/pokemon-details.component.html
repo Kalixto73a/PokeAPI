@@ -1,22 +1,28 @@
-<div class="w-full flex xl:justify-start justify-center pl-7 pt-3">
-  <button (click)="goBack()" class="w-[15rem] flex pl-0 pt-0">
-    <div class="bg-[#FFCB05] flex flex-row items-center justify-center rounded-xl w-full h-full p-3 group">
-      <svg class="w-[3rem] h-auto xl:transition-transform xl:duration-500 ease-in-out group-hover:rotate-[360deg]"
-           fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="w-full flex justify-center xl:justify-start xl:pl-7 py-3 px-3">
+  <button (click)="goBack()" class="w-full sm:w-[15rem]">
+    <div class="bg-[#FFCB05] flex flex-row items-center justify-center rounded-xl p-3 group">
+      <svg
+        class="w-8 xl:w-[3rem] h-auto xl:transition-transform xl:duration-500 ease-in-out group-hover:rotate-[360deg]"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
       </svg>
-      <div class="font-bold ml-2">Go Back To Region</div>
+      <div class="font-bold ml-2 text-sm sm:text-base">
+        Go Back To Region
+      </div>
     </div>
   </button>
 </div>
-<div class="max-w-full mx-auto p-6 font-bold uppercase">
-  <div class="grid xl:grid-cols-9 gap-6 bg-white/30 rounded-2xl p-[4rem] border-2 border-[#FFCB05] relative">
-    <div class="xl:col-span-3 flex flex-col items-center justify-center space-y-4">
-      <div class="w-40 h-40 w-[300px] h-[300px]  rounded-full overflow-hidden border-4 bg-black flex items-center justify-center shadow-[0_0_8px_2px_rgba(255,255,255,0.4)]">
-          <app-sprite-for-each-pokemon [pokemonId]="pokemonId" [shiny]="isShiny" [selectedVariantIndex]="selectedVariantIndex" (variantsLoaded)="onVariantsLoaded($event)" (variantTypesChanged)="onVariantTypesChanged($event)"></app-sprite-for-each-pokemon>
+<div class="max-w-full mx-auto p-3 sm:p-6 font-bold uppercase">
+  <div class="grid grid-cols-1 xl:grid-cols-9 gap-6 bg-white/30 rounded-2xl p-4 sm:p-6 xl:p-[4rem] border-2 border-[#FFCB05]">
+    <div class="xl:col-span-3 flex flex-col items-center space-y-4">
+      <div class="w-[300px] h-[300px] sm:w-[300px] sm:h-[300px] xl:w-[300px] xl:h-[300px] rounded-full overflow-hidden border-4 bg-black flex items-center justify-center shadow-[0_0_8px_2px_rgba(255,255,255,0.4)]">
+        <app-sprite-for-each-pokemon [pokemonId]="pokemonId" [shiny]="isShiny" [selectedVariantIndex]="selectedVariantIndex" (variantsLoaded)="onVariantsLoaded($event)" (variantTypesChanged)="onVariantTypesChanged($event)">
+        </app-sprite-for-each-pokemon>
       </div>
-      <div class="flex flex-wrap justify-center items-center">
-          <div *ngIf="totalVariants > 1" class="relative w-[14rem]">
+      <div class="flex flex-wrap justify-center items-center gap-2">
+        <div *ngIf="totalVariants > 1" class="relative w-[14rem]">
             <button (click)="openDropdown = !openDropdown" class="w-full h-12 bg-white border-2 border-black rounded-lg py-2 px-4 font-bold shadow-md text-center flex justify-between items-center uppercase" [ngStyle]="{ background: statsBackground }">
               {{ variantNames[selectedVariantIndex] | titlecase }}
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,51 +35,66 @@
               </li>
             </ul>
           </div>
-          <button *ngIf="currentVariantHasShiny" (click)="toggleShiny()">
-            <img [src]="isShiny ? 'https://res.cloudinary.com/dzfqdntdw/image/upload/v1771177585/Shine_1_j6yoln.png' : 'https://res.cloudinary.com/dzfqdntdw/image/upload/v1770234616/Shine_rmz6tl.png' "draggable="false"class="w-14 h-14" alt=""/>
-          </button>
+        <button *ngIf="currentVariantHasShiny" (click)="toggleShiny()">
+          <img
+            [src]="isShiny
+              ? 'https://res.cloudinary.com/dzfqdntdw/image/upload/v1771177585/Shine_1_j6yoln.png'
+              : 'https://res.cloudinary.com/dzfqdntdw/image/upload/v1770234616/Shine_rmz6tl.png'"
+            class="w-12 h-12 sm:w-14 sm:h-14"
+            draggable="false"/>
+        </button>
+      </div>
+      <div class="flex flex-col sm:flex-row items-center gap-6 text-center">
+        <div>
+          <div class="text-xl sm:text-2xl">
+            {{ variantNames.length > 1
+              ? variantNames[selectedVariantIndex]
+              : pokemon.name }}
+          </div>
+          <app-pokemon-number [pokemonId]="pokemonId"></app-pokemon-number>
         </div>
-        <div class="flex items-center gap-10">
-          <div class="flex flex-row justify-center items-center w-full space-x-12">
-            <div class="flex flex-col justify-center items-center text-center space-y-1 mt-2">
-              <div class="uppercase font-bold text-2xl">
-                {{ variantNames.length > 1 ? variantNames[selectedVariantIndex] : pokemon.name}}
-              </div>
-              <app-pokemon-number [pokemonId]="pokemonId"></app-pokemon-number>
-            </div>
-            <div class="flex justify-center items-center w-24 h-24 bg-cover bg-center" style="background-image: url(&quot;https://res.cloudinary.com/dzfqdntdw/image/upload/v1770231053/kilogramo_mbfvwr.png&quot;);">
-              <div class="text-black mt-4 text-sm font-semibold">
-                {{ getWeightInKg(pokemon.weight) }} kg
-              </div>
-            </div>
+        <div class="w-20 h-20 bg-cover bg-center flex items-center justify-center" style="background-image:url('https://res.cloudinary.com/dzfqdntdw/image/upload/v1770231053/kilogramo_mbfvwr.png')">
+          <div class="text-[0.7rem] sm:text-sm font-semibold mt-4">
+            {{ getWeightInKg(pokemon.weight) }} kg
           </div>
         </div>
-        <app-pokemon-types [types]="currentTypes"></app-pokemon-types>
+      </div>
+      <app-pokemon-types [types]="currentTypes"></app-pokemon-types>
     </div>
-    <div class="xl:col-span-6 rounded-2xl px-[4rem] border-4 border-black flex flex-col" [ngStyle]="{ background: statsBackground }">
-      <div class="grid grid-cols-1 xl:grid-cols-8 gap-4 h-full ">
-        <div class="xl:col-span-4 flex flex-col justify-center">
+    <div class="justify-center xl:col-span-6 rounded-2xl p-4 sm:p-6 xl:px-[4rem] border-4 border-black flex flex-col" [ngStyle]="{ background: statsBackground }">
+      <div class="grid grid-cols-1 xl:grid-cols-8 gap-6">
+        <div class="xl:col-span-4">
           <h3 class="text-center text-xl my-4">Stats</h3>
-          <div *ngFor="let s of pokemon.stats; let i=index" class="flex justify-center items-center gap-4 mb-2 h-[3rem]">
-            <div class="w-40 text-center">{{ s.stat.name }}</div>
-            <div class="w-12 text-right">{{ s.base_stat }}</div>
-            <div class="h-[1rem] bg-black rounded-full overflow-hidden  w-[30rem] xl:w-[20rem]">
-              <div class="h-full bg-white transition-all duration-1000"
-                [style.width.%]="statsWidths[i] || 0">
+          <div class="space-y-7 flex flex-col items-center">
+            <div *ngFor="let s of pokemon.stats; let i=index" class="flex flex-col sm:flex-row items-center gap-2 mb-3">
+              <div class="w-40 text-center">
+                {{ s.stat.name }}
+              </div>
+              <div class="w-5 text-center">
+                {{ s.base_stat }}
+              </div>
+              <div class="h-[1rem] bg-black rounded-full overflow-hidden w-[250px] md:w-[500px] lg:w-[500px] xl:w-[130px] 2xl:w-[215px]">
+                <div
+                  class="h-full bg-white transition-all duration-1000"
+                  [style.width.%]="statsWidths[i] || 0">
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="h-2 bg-black rounded-t-lg rounded-b-lg w-full xl:hidden"></div>
-        <div class="xl:col-span-4 flex flex-col items-center justify-center xl:pl-4 pb-8">
-          <h3 class="pb-4 uppercase font-bold text-lg lg:text-xl">{{ originRegionName }}</h3>
-          <img *ngIf="regionId" [src]="originRegionImage" alt="Region image" class="w-[800px] xl:w-full h-auto rounded-xl border-4 border-black" draggable="false"/>
+        <div class="justify-center xl:col-span-4 flex flex-col items-center">
+          <h3 class="pb-4 text-lg text-center">
+            {{ originRegionName }}
+          </h3>
+          <img *ngIf="regionId" [src]="originRegionImage" class="w-full max-w-[500px] rounded-xl border-4 border-black" draggable="false"/>
         </div>
       </div>
     </div>
+  </div>
 </div>
-<div class="pt-4">
-  <div class="bg-white/30 rounded-2xl p-3 lg:p-4 border-2 border-[#FFCB05] text-black items-center justify-center">
-      <app-pokemon-evolution-chain *ngIf="pokemon.species" [speciesUrl]="pokemon.species.url" [pokemonId]="pokemon.id" class="flex flex-wrap items-center justify-center"></app-pokemon-evolution-chain>
+<div class="pb-6 px-3 sm:px-6">
+  <div class="bg-white/30 rounded-2xl p-3 sm:p-4 border-2 border-[#FFCB05]">
+    <app-pokemon-evolution-chain *ngIf="pokemon.species" [speciesUrl]="pokemon.species.url" [pokemonId]="pokemon.id" class="flex flex-wrap justify-center">
+    </app-pokemon-evolution-chain>
   </div>
 </div>
