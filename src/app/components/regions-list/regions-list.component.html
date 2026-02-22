@@ -1,14 +1,21 @@
-<div class=" flex flex-wrap text-white justify-center items-center">
-    <h1 class="flex justify-center items-center text-[4rem] uppercase pt-2 pb-8 font-pokemonFont text-white drop-shadow-lg bg-[#FFCB05]/50 px-6 rounded-[3rem] text-shadow">Regions</h1>
-    <div class="flex flex-wrap justify-center items-center p-6 gap-24">
-        <div *ngFor='let region of regions' (click)="selectRegion(region)" class="flex cursor-pointer flex-col justify-center items-center w-[320px] h-[390px] rounded-xl overflow-hidden p-2 pb-4 transform transition-transform duration-200 hover:scale-105 bg-cover bg-center bg-no-repeat border-2" [ngStyle]="{'background-image': 'url(' + getRegionImage(getRegionId(region)) + ')'}">
-            <div class="absolute inset-0 bg-black/60"></div>
-            <div class="relative z-10 flex flex-col items-center pt-6">
-                <img class="w-64 h-64 rounded-xl border-2" draggable="false" src="{{getRegionImage(getRegionId(region))}}" alt="region.name" loading="lazy">
-                <div class="pt-4 pb-2 w-full text-center">
-                    <h2 class="uppercase p-2 text-[2rem] bg-black/80 border border-white rounded-full font-bold"> {{ region.name }}</h2>
-                </div>
-            </div>
+<div class="flex flex-wrap text-white justify-center items-center">
+  <h1 class="flex justify-center items-center text-[4rem] uppercase pt-2 pb-8 font-pokemonFont text-white drop-shadow-lg bg-[#FFCB05]/50 px-6 rounded-[3rem] text-shadow">
+    Regions
+  </h1>
+  <div class="flex flex-wrap justify-center items-center p-6 gap-24">
+    <div *ngFor="let region of regions" (click)="selectRegion(region)"
+         class="flex cursor-pointer flex-col justify-center items-center w-[320px] h-[390px] rounded-xl overflow-hidden p-2 pb-4 transform transition-transform duration-200 hover:scale-105 bg-cover bg-center bg-no-repeat border-2"
+         [ngStyle]="{'background-image': 'url(' + getRegionImage(region.id) + ')'}">
+      <div class="absolute inset-0 bg-black/60"></div>
+      <div class="relative z-10 flex flex-col items-center pt-6">
+        <img class="w-64 h-64 rounded-xl border-2" draggable="false"
+             [src]="getRegionImage(region.id)" alt="{{region.name}}" loading="lazy">
+        <div class="pt-4 pb-2 w-full text-center">
+          <h2 class="uppercase p-2 text-[2rem] bg-black/80 border border-white rounded-full font-bold">
+            {{ region.name }}
+          </h2>
         </div>
+      </div>
     </div>
+  </div>
 </div>
