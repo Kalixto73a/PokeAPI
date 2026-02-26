@@ -20,7 +20,7 @@ Hello this is my first project with Angular17 and my choose was to do a pokedex 
 1. Clone the repository with this code: `git clone https://github.com/Kalixto73a/PokeAPI`
 2. Then run `npm install` wait untill finishes.
 3. Then run `ng serve` and navigate to `http://localhost:4200/PokeAPI` and enjoy.
-4. If you don't want to clone the repository you can check the project rigth here cause is published on github pages `kalixto73a.github.io/PokeAPI/`
+4. If you don't want to clone the repository you can check the project rigth here cause is published on github pages [kalixto73a.github.io/PokeAPI/](https://kalixto73a.github.io/PokeAPI/Regions)
 
 ## ✍️🙍 Authors
 
